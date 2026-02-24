@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th1 31, 2026 lúc 06:19 PM
+-- Thời gian đã tạo: Th2 24, 2026 lúc 08:22 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -208,7 +208,12 @@ INSERT INTO `booking` (`id`, `code`, `location_id`, `customer_id`, `customer_nam
 (18, 'DB000017', 1, 10, 'a Thành', '0961581328', '2026-01-01 20:58:00', 1, 'cancel', NULL, NULL, NULL, NULL, 1, '2025-12-31 13:58:56'),
 (19, 'DB000018', 1, 10, 'a Thành', '0961581328', '2026-01-15 16:15:00', 1, 'waiting', NULL, NULL, NULL, NULL, 1, '2026-01-15 09:15:45'),
 (20, 'DB000019', 1, 19, 'a', '1', '2026-01-16 09:30:00', 1, 'cancel', NULL, NULL, NULL, NULL, NULL, '2026-01-16 05:35:26'),
-(21, 'DB000020', 1, 20, 'Như Quỳnh', '0862971083', '2026-01-26 21:30:00', 3, 'waiting', NULL, NULL, NULL, NULL, NULL, '2026-01-19 11:48:20');
+(21, 'DB000020', 1, 20, 'Như Quỳnh', '0862971083', '2026-01-26 21:30:00', 3, 'waiting', NULL, NULL, NULL, NULL, NULL, '2026-01-19 11:48:20'),
+(22, 'DB000021', 1, 20, 'Như Quỳnh', '0862971083', '2026-02-26 00:00:00', 1, 'waiting', NULL, 12, NULL, NULL, 1, '2026-02-24 07:07:11'),
+(23, 'DB000022', 1, 10, 'A Thành', '0961581328', '2026-02-27 00:00:00', 1, 'assigned', NULL, 13, NULL, NULL, 1, '2026-02-24 07:11:01'),
+(24, 'DB000023', 1, 10, 'A Thành', '0961581328', '2026-03-01 00:00:00', 1, 'waiting', NULL, NULL, NULL, NULL, 1, '2026-02-24 07:17:13'),
+(25, 'DB000024', 1, 10, 'A Thành', '0961581328', '2026-03-07 00:00:00', 1, 'assigned', NULL, 12, NULL, NULL, 1, '2026-02-24 07:17:58'),
+(26, 'DB000025', 1, 10, 'A Thành', '0961581328', '2026-02-25 00:00:00', 1, 'waiting', NULL, NULL, NULL, NULL, 1, '2026-02-24 07:20:37');
 
 --
 -- Bẫy `booking`
@@ -605,7 +610,7 @@ CREATE TABLE `id_counters` (
 --
 
 INSERT INTO `id_counters` (`table_name`, `last_id`) VALUES
-('booking', 20),
+('booking', 25),
 ('contact', 3),
 ('customer', 18),
 ('export', 6),
@@ -805,7 +810,7 @@ INSERT INTO `ingredient` (`id`, `code`, `category_id`, `name`, `quantity`, `unit
 (1, 'NL000001', 1, 'Mực', 4.00, 'kg', 235000.00, '2025-11-25 19:30:18'),
 (2, 'NL000002', 1, 'Cánh Gà', 3.20, 'kg', 75000.00, '2025-12-01 06:25:26'),
 (3, 'NL000003', 1, 'Chân Gà', 5.00, 'kg', 75000.00, '2025-12-01 06:25:26'),
-(4, 'NL000004', 1, 'Tôm Sú', 2.60, 'kg', 330000.00, '2025-12-09 18:02:33'),
+(4, 'NL000004', 1, 'Tôm Sú', 1.00, 'kg', 330000.00, '2025-12-09 18:02:33'),
 (5, 'NL000005', 1, 'Bạch Tuộc', 5.00, 'kg', 215000.00, '2025-12-09 18:10:45'),
 (6, 'NL000006', 1, 'Ốc Hương', 4.10, 'kg', 315000.00, '2025-12-10 07:46:19'),
 (7, 'NL000007', 1, 'Chân Gà Rút Xương', 1.80, 'kg', 60000.00, '2025-12-10 09:51:43'),
@@ -849,6 +854,56 @@ CREATE TABLE `ingredient_available_stock` (
 ,`available_qty` decimal(35,2)
 ,`last_price` decimal(12,2)
 );
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `inventory_check`
+--
+
+CREATE TABLE `inventory_check` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `code` varchar(20) DEFAULT NULL,
+  `staff_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `check_time` datetime DEFAULT NULL,
+  `balance_time` datetime DEFAULT NULL,
+  `status` enum('draft','completed') NOT NULL DEFAULT 'draft',
+  `note` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `inventory_check`
+--
+
+INSERT INTO `inventory_check` (`id`, `code`, `staff_id`, `check_time`, `balance_time`, `status`, `note`, `created_at`, `updated_at`) VALUES
+(1, 'KK000001', 1, '2026-02-24 13:51:00', '2026-02-24 13:53:48', 'completed', NULL, '2026-02-24 06:53:48', '2026-02-24 06:53:48');
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `inventory_check_details`
+--
+
+CREATE TABLE `inventory_check_details` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `inventory_check_id` bigint(20) UNSIGNED NOT NULL,
+  `ingredient_id` bigint(20) UNSIGNED NOT NULL,
+  `stock_qty` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `actual_qty` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `diff_qty` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `price` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `inventory_check_details`
+--
+
+INSERT INTO `inventory_check_details` (`id`, `inventory_check_id`, `ingredient_id`, `stock_qty`, `actual_qty`, `diff_qty`, `price`, `created_at`, `updated_at`) VALUES
+(1, 1, 4, 2.60, 1.00, -1.60, 330000.00, '2026-02-24 06:53:48', '2026-02-24 06:53:48');
 
 -- --------------------------------------------------------
 
@@ -920,7 +975,8 @@ INSERT INTO `inventory_log` (`id`, `ingredient_id`, `type`, `quantity`, `price`,
 (83, 1, 'export', 1.00, 0.00, 0.00, 'invoice', 235000, 1, '2026-01-15 08:07:56'),
 (84, 6, 'export', 0.30, 0.00, 0.00, 'invoice', 98, 1, '2026-01-15 09:16:22'),
 (85, 7, 'export', 0.40, 0.00, 0.00, 'invoice', 98, 1, '2026-01-15 09:16:22'),
-(86, 10, 'export', 10.00, 0.00, 0.00, 'invoice', 98, 1, '2026-01-15 09:16:22');
+(86, 10, 'export', 10.00, 0.00, 0.00, 'invoice', 98, 1, '2026-01-15 09:16:22'),
+(87, 4, 'export', 1.60, 330000.00, 528000.00, 'inventory', 1, 1, '2026-02-24 06:53:48');
 
 -- --------------------------------------------------------
 
@@ -1824,6 +1880,21 @@ ALTER TABLE `ingredient`
   ADD KEY `category_id` (`category_id`);
 
 --
+-- Chỉ mục cho bảng `inventory_check`
+--
+ALTER TABLE `inventory_check`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `inventory_check_code_unique` (`code`);
+
+--
+-- Chỉ mục cho bảng `inventory_check_details`
+--
+ALTER TABLE `inventory_check_details`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `inventory_check_id` (`inventory_check_id`),
+  ADD KEY `ingredient_id` (`ingredient_id`);
+
+--
 -- Chỉ mục cho bảng `inventory_log`
 --
 ALTER TABLE `inventory_log`
@@ -1959,7 +2030,7 @@ ALTER TABLE `attendance`
 -- AUTO_INCREMENT cho bảng `booking`
 --
 ALTER TABLE `booking`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT cho bảng `booking_item`
@@ -2028,10 +2099,22 @@ ALTER TABLE `ingredient`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
+-- AUTO_INCREMENT cho bảng `inventory_check`
+--
+ALTER TABLE `inventory_check`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT cho bảng `inventory_check_details`
+--
+ALTER TABLE `inventory_check_details`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT cho bảng `inventory_log`
 --
 ALTER TABLE `inventory_log`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=87;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=88;
 
 --
 -- AUTO_INCREMENT cho bảng `invoice`
