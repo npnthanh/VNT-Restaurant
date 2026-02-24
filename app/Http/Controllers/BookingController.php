@@ -62,6 +62,7 @@ class BookingController extends Controller
 
             $customerId = $customer->id;
             $customerName = $customer->name;
+            $status = $request->table_id ? 'assigned' : 'waiting';
 
             $booking = Booking::create([
                 'customer_id'   => $customerId,
@@ -72,7 +73,7 @@ class BookingController extends Controller
                 'guest_count'   => $request->guest_count ?? 1,
                 'area_id'       => $request->area_id,
                 'table_id'      => $request->table_id,
-                'status'        => 'waiting',
+                'status'        => $status,
                 'note'          => $request->note,
                 'created_by'    => Auth::guard('staff')->id()
             ]);

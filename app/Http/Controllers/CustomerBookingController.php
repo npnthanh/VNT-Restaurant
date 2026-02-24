@@ -47,6 +47,7 @@ class CustomerBookingController extends Controller
             } else {
                 $customerId = $customer->id;
             }
+            $status = $request->table_id ? 'assigned' : 'waiting';
             $bookingId = DB::table('booking')->insertGetId([
                 'customer_id'   => $customerId,
                 'customer_name' => $request->customer_name,
@@ -56,7 +57,7 @@ class CustomerBookingController extends Controller
                 'booking_time'  => $request->booking_time,
                 'promotion_id'  => $request->promotion_id,
                 'note'          => $request->note,
-                'status'        => 'waiting',
+                'status'        => $status,
                 'created_at'    => now()
             ]);
             if ($request->has('items') && is_array($request->items)) {

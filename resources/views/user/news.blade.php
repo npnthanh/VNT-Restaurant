@@ -10,10 +10,13 @@
         <section class="menu-banner">
             <div class="menu-banner-container">
                 <div class="menu-banner-text">
-                    <h1>Tin Tức</h1>
-                    <p>Nơi cập nhật nhanh nhất những sự kiện nóng hổi, chương trình khuyến mại,
+                    <h1>🍽 Website Quản Lý Nhà Hàng</h1>
+                    <p>
+                        Vai trò: Full Stack Web Developer
                         <br>
-                        khách hàng và thông tin thương hiệu.
+                        Công nghệ: Laravel, PHP, MySQL, HTML, CSS, JavaScript
+                        <br>
+                        Phát triển hệ thống quản lý nhà hàng hoàn chỉnh gồm website người dùng và trang quản trị.
                     </p>
                 </div>
             </div>
@@ -23,51 +26,66 @@
         <div class="menu-scroll-wrapper">
             <div class="fade-zone left"></div>
             <div class="menu-scroll" id="menuScroll">
-                <a href="#" class="active">Tất cả</a>
-                <a href="#">Ưu ĐÃI</a>
-                <a href="#">SỰ KIỆN</a>
-                <a href="#">VĂN HÓA</a>
+                <a href="#overview" class="active">Tổng quan</a>
+                <a href="#customer-site">Website khách hàng</a>
+                <a href="#admin-system">Hệ thống quản trị</a>
+                <a href="#architecture">CSDL & MVC</a>
             </div>
             <div class="fade-zone right"></div>
         </div>
-                <div class="container">
-            @if($promotions->count() > 0)
-                @php $featured = $promotions->first(); @endphp
-                <div class="news-banner">
-                    <a href="#">
-                        <img class="big-banner" src="{{ asset($featured->images ?? 'images/news/news4.png') }}" alt="{{ $featured->name ?? 'Banner' }}" />
-                        <div class="banner-text">
-                            <h2>{{ $featured->description ?? $featured->name }}</h2>
-                            <div class="banner-cta">
-                                <span class="icn">
-                                    <img src="{{ asset('images/icon/rightarrow-icon.png') }}" />
-                                </span>
-                                <span class="txt">XEM NGAY</span>
-                            </div>
+        <div class="container">
+            <div class="news-banner" id="overview">
+                <div class="news-banner-content">
+                    <img class="big-banner" src="{{ asset('images/news/news4.png') }}" alt="Website Quản Lý Nhà Hàng" />
+                    <div class="banner-text">
+                        <h2>Website Quản Lý Nhà Hàng</h2>
+                        <div class="banner-meta">
+                            <p><span class="label">Vai trò:</span> Full Stack Web Developer</p>
+                            <p><span class="label">Công nghệ:</span> Laravel, PHP, MySQL, HTML, CSS, JavaScript</p>
+                            <p>Phát triển hệ thống quản lý nhà hàng hoàn chỉnh gồm website người dùng và trang quản trị.</p>
                         </div>
-                    </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="news-grid">
+                <div class="news-item" id="customer-site">
+                    <div class="news-content">
+                        <h3>Website khách hàng</h3>
+                        <ul class="news-list">
+                            <li>Xem danh sách cơ sở</li>
+                            <li>Xem thực đơn</li>
+                            <li>Đặt bàn trực tuyến</li>
+                        </ul>
+                    </div>
                 </div>
 
-                <div class="news-grid">
-                    @foreach($promotions->skip(1) as $promotion)
-                        <div class="news-item">
-                            <a href="#">
-                                <img class="news-img" src="{{ asset($promotion->images ?? 'images/news/news1.png') }}" alt="{{ $promotion->name ?? 'News' }}" />
-                                <div class="news-content">
-                                    <h3>{{ $promotion->description ?? $promotion->name }}</h3>
-                                    <span class="icn">
-                                        <img src="{{ asset('images/icon/rightarrow-icon.png') }}" style="width:14px;" />
-                                    </span>
-                                    <span class="txt">XEM NGAY</span>
-                                </div>
-                            </a>
-                        </div>
-                    @endforeach
+                <div class="news-item" id="admin-system">
+                    <div class="news-content">
+                        <h3>Hệ thống quản trị</h3>
+                        <ul class="news-list">
+                            <li>Quản lý khu vực, phòng và bàn</li>
+                            <li>Quản lý món ăn và nguyên liệu</li>
+                            <li>Quản lý khách hàng và nhân viên</li>
+                            <li>Quản lý lịch làm việc và chấm công</li>
+                            <li>Tính bảng lương nhân viên</li>
+                            <li>Quản lý nhập – xuất kho</li>
+                            <li>Trang thu ngân (Cashier/POS) bán hàng trực tiếp</li>
+                        </ul>
+                    </div>
                 </div>
-            @else
-                <p>Chua co tin tuc.</p>
-            @endif
-        </div>   
+
+                <div class="news-item" id="architecture">
+                    <div class="news-content">
+                        <h3>CSDL & Kiến trúc</h3>
+                        <ul class="news-list">
+                            <li>Thiết kế cơ sở dữ liệu quan hệ và xây dựng đầy đủ chức năng CRUD.</li>
+                            <li>Áp dụng mô hình MVC trong Laravel.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
     <!-- CONTENT START -->
 @endsection

@@ -12,7 +12,24 @@
     </div>
 
     <div class="header-right">
-        <button class="icon-notify" id="notifyBtn" title="Thông báo">🔔</button>
+        <div class="notify-wrap" id="notifyWrap">
+            <button class="icon-notify" id="notifyBtn" title="Thông báo" aria-expanded="false" aria-controls="notifyDropdown">
+                <span class="notify-icon">🔔</span>
+                <span class="notify-badge is-hidden" id="notifyBadge" aria-hidden="true">0</span>
+            </button>
+            <div class="notify-dropdown" id="notifyDropdown" aria-hidden="true">
+                <div class="notify-header">
+                    <div class="notify-title">Hộp thư đến</div>
+                    <button type="button" class="notify-mark" id="notifyMarkAll">Đánh dấu đã đọc</button>
+                </div>
+                <div class="notify-tabs">
+                    <button type="button" class="notify-tab active">Tất cả</button>
+                </div>
+                <div class="notify-list" id="notifyList">
+                    <div class="notify-empty">Chưa có thông báo.</div>
+                </div>
+            </div>
+        </div>
         <div class="setting">
             <button class="icon" id="settingsBtn" title="Cài đặt">Thiết lập <i class="hide-mobile fas fa-cog"></i></button>
             <div class="setting-dropdown" id="settingDropdown">
@@ -116,6 +133,9 @@
                     @endcan
                     @can('view_ingredient')
                         <li><a href="{{ url('/pos/ingredient') }}">Nguyên liệu</a></li>
+                    @endcan
+                    @can('view_ingredient')
+                        <li><a href="{{ url('/pos/inventory') }}">Kiểm kho</a></li>
                     @endcan
                 </ul>
             </li>

@@ -55,6 +55,7 @@
     <script src="{{ asset('js/pos/layout.js') }}"></script>
     <script src="{{ asset('js/pos/logout.js') }}"></script>
     <script src="{{ asset('js/pos/common/toast.js') }}"></script>
+    <script src="{{ asset('js/pos/notifications.js') }}"></script>
     @stack('js')
     <div id="toast-container"></div>
 </body>

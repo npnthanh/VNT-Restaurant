@@ -153,7 +153,8 @@
   height: 350px;
 }
 
-.news-banner > a {
+.news-banner > a,
+.news-banner-content {
   display: flex;
   width: 100%;
   height: 100%;
@@ -181,6 +182,23 @@
   margin: 0 0 20px 0;
   font-size: 30px;
   line-height: 1.3;
+}
+
+.banner-meta {
+  display: grid;
+  gap: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.banner-meta p {
+  margin: 0;
+}
+
+.banner-meta .label {
+  font-weight: 700;
+  color: #FFA827;
 }
 
 .banner-cta {
@@ -238,6 +256,23 @@
   margin: 0 0 14px;
   font-size: 18px;
   color: #222;
+}
+
+.news-content p {
+  margin: 0;
+  color: #333;
+  line-height: 1.6;
+}
+
+.news-list {
+  margin: 0;
+  padding-left: 18px;
+  color: #333;
+}
+
+.news-list li {
+  margin-bottom: 6px;
+  line-height: 1.5;
 }
 
 .news-content .icn,

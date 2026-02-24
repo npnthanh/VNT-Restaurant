@@ -20,6 +20,7 @@ use App\Http\Controllers\RegionController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\ExportController;
+use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\RoleController;
@@ -34,6 +35,7 @@ use App\Http\Controllers\SalesAnalysisController;
 use App\Http\Controllers\ProductAnalysisController;
 use App\Http\Controllers\WorkScheduleController;
 use App\Http\Controllers\WorkShiftController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\PayrollController;
 use Illuminate\Http\Request;
@@ -116,6 +118,9 @@ Route::prefix('pos')->middleware('auth:staff')->group(function () {
     Route::post('/booking/{id}/cancel', [BookingController::class, 'cancel'])->name('booking.cancel');
     Route::get('/api/booking-items/{id}', [BookingController::class, 'getBookingItems'])->name('api.booking_items');
 
+    // NOTIFICATIONS
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('pos.notifications');
+
     // PRODUCT
     Route::get('/product', [ProductController::class, 'index'])->name('pos.product')->middleware('can:view_product');
     Route::post('/products/store', [ProductController::class, 'store'])->name('product.store')->middleware('can:create_product');
@@ -158,6 +163,17 @@ Route::prefix('pos')->middleware('auth:staff')->group(function () {
             ->limit(20)
             ->get();
     })->middleware('can:view_ingredient');
+
+    // INVENTORY
+    Route::get('/inventory', [InventoryController::class, 'index'])
+        ->name('pos.inventory')
+        ->middleware('can:view_ingredient');
+    Route::get('/inventory/create', [InventoryController::class, 'create'])
+        ->name('inventory.detail')
+        ->middleware('can:view_ingredient');
+    Route::post('/inventory/store', [InventoryController::class, 'store'])
+        ->name('inventory.store')
+        ->middleware('can:view_ingredient');
 
 
     // CATEGORY INGREDIENT
