@@ -8,15 +8,69 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!notifyWrap || !notifyBtn || !dropdown || !list || !badge) return;
 
+    const tabButtons = dropdown.querySelectorAll('.notify-tab');
     const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content') || '';
-    const storageKey = 'pos_notify_last_seen_id';
+    const storageKey = 'pos_notify_last_seen_map';
+    const legacyStorageKey = 'pos_notify_last_seen_id';
 
-    let lastSeenId = parseInt(localStorage.getItem(storageKey) || '0', 10);
-    let lastFetchedId = 0;
-    let latestId = 0;
+    let lastSeen = { booking: 0, contact: 0 };
+    const stored = localStorage.getItem(storageKey);
+    if (stored) {
+        try {
+            const parsed = JSON.parse(stored);
+            if (parsed && typeof parsed === 'object') {
+                lastSeen = { ...lastSeen, ...parsed };
+            }
+        } catch (e) {
+            lastSeen = { booking: 0, contact: 0 };
+        }
+    } else {
+        const legacyValue = parseInt(localStorage.getItem(legacyStorageKey) || '0', 10);
+        if (Number.isFinite(legacyValue) && legacyValue > 0) {
+            lastSeen.booking = legacyValue;
+        }
+        localStorage.setItem(storageKey, JSON.stringify(lastSeen));
+    }
+
+    lastSeen.booking = Number.isFinite(parseInt(lastSeen.booking, 10)) ? parseInt(lastSeen.booking, 10) : 0;
+    lastSeen.contact = Number.isFinite(parseInt(lastSeen.contact, 10)) ? parseInt(lastSeen.contact, 10) : 0;
+
+    let lastFetched = { booking: 0, contact: 0 };
+    let latestIds = { booking: 0, contact: 0 };
     let currentItems = [];
+    let currentFilter = 'all';
     let suppressSound = true;
     let audioCtx = null;
+
+    function normalizeType(type) {
+        return type === 'contact' ? 'contact' : 'booking';
+    }
+
+    function getLastSeen(type) {
+        const normalized = normalizeType(type);
+        return lastSeen[normalized] || 0;
+    }
+
+    function saveLastSeen() {
+        localStorage.setItem(storageKey, JSON.stringify(lastSeen));
+    }
+
+    function getMaxId(type, items) {
+        const normalized = normalizeType(type);
+        return items.reduce((max, item) => {
+            if (normalizeType(item.type) !== normalized) return max;
+            const id = Number(item.id) || 0;
+            return id > max ? id : max;
+        }, 0);
+    }
+
+    function getUnreadCount(items) {
+        return items.reduce((total, item) => {
+            const id = Number(item.id) || 0;
+            const unread = id > getLastSeen(item.type);
+            return total + (unread ? 1 : 0);
+        }, 0);
+    }
 
     function setBadge(count) {
         if (!badge) return;
@@ -54,27 +108,39 @@ document.addEventListener('DOMContentLoaded', () => {
             .replace(/'/g, '&#39;');
     }
 
+    function getVisibleItems(items) {
+        if (currentFilter === 'all') {
+            return items;
+        }
+        return items.filter(item => normalizeType(item.type) === currentFilter);
+    }
+
     function renderList(items) {
         if (!list) return;
-        if (!items.length) {
+        const visibleItems = getVisibleItems(items);
+        if (!visibleItems.length) {
             list.innerHTML = '<div class="notify-empty">Chưa có thông báo.</div>';
             return;
         }
 
-        list.innerHTML = items.map(item => {
-            const isRead = item.id <= lastSeenId;
-            const statusText = formatStatus(item.status);
+        list.innerHTML = visibleItems.map(item => {
+            const type = normalizeType(item.type);
+            const isRead = Number(item.id) <= getLastSeen(type);
+            const statusText = type === 'booking' ? formatStatus(item.status) : '';
             const safeTitle = escapeHtml(item.title || 'Thông báo');
             const safeMessage = escapeHtml(item.message || '');
             const safeTime = escapeHtml(item.time || '');
+            const iconClass = type === 'contact' ? 'fa-regular fa-envelope' : 'fa-regular fa-bell';
+            const iconWrapClass = type === 'contact' ? 'notify-icon-wrap contact' : 'notify-icon-wrap';
+            const messageLine = statusText ? `${safeMessage} ${statusText}` : safeMessage;
             return `
-                <div class="notify-item ${isRead ? 'read' : ''}" data-id="${item.id}" data-url="${item.url || ''}">
-                    <div class="notify-icon-wrap">
-                        <i class="fa-regular fa-bell"></i>
+                <div class="notify-item ${isRead ? 'read' : ''}" data-id="${item.id}" data-url="${item.url || ''}" data-type="${type}">
+                    <div class="${iconWrapClass}">
+                        <i class="${iconClass}"></i>
                     </div>
                     <div class="notify-content">
                         <div class="notify-item-title">${safeTitle}</div>
-                        <div class="notify-item-message">${safeMessage} ${statusText}</div>
+                        <div class="notify-item-message">${messageLine}</div>
                         <div class="notify-item-time">${safeTime}</div>
                     </div>
                     <span class="notify-dot"></span>
@@ -83,16 +149,33 @@ document.addEventListener('DOMContentLoaded', () => {
         }).join('');
     }
 
-    function markReadUpTo(id) {
-        const nextId = Number.isFinite(id) ? id : latestId;
+    function refreshUI() {
+        renderList(currentItems);
+        setBadge(getUnreadCount(currentItems));
+    }
+
+    function markRead(type, id) {
+        const normalized = normalizeType(type);
+        const nextId = Number.isFinite(id) ? id : 0;
         if (!nextId) return;
-        if (nextId > lastSeenId) {
-            lastSeenId = nextId;
-            localStorage.setItem(storageKey, String(lastSeenId));
-            renderList(currentItems);
-            const unreadCount = currentItems.filter(item => item.id > lastSeenId).length;
-            setBadge(unreadCount);
+        if (nextId > getLastSeen(normalized)) {
+            lastSeen[normalized] = nextId;
+            saveLastSeen();
+            refreshUI();
         }
+    }
+
+    function markReadAll() {
+        const nextBooking = latestIds.booking || getMaxId('booking', currentItems);
+        const nextContact = latestIds.contact || getMaxId('contact', currentItems);
+        if (nextBooking > lastSeen.booking) {
+            lastSeen.booking = nextBooking;
+        }
+        if (nextContact > lastSeen.contact) {
+            lastSeen.contact = nextContact;
+        }
+        saveLastSeen();
+        refreshUI();
     }
 
     function playSound() {
@@ -158,30 +241,47 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await res.json();
 
             currentItems = Array.isArray(data.items) ? data.items : [];
-            latestId = Number(data.latest_id) || (currentItems[0]?.id || 0);
 
-            renderList(currentItems);
+            const serverLatest = data.latest_ids || {};
+            latestIds = {
+                booking: Number(serverLatest.booking) || getMaxId('booking', currentItems),
+                contact: Number(serverLatest.contact) || getMaxId('contact', currentItems)
+            };
 
-            const unreadCount = currentItems.filter(item => item.id > lastSeenId).length;
-            setBadge(unreadCount);
+            refreshUI();
 
-            if (!suppressSound && lastFetchedId && latestId > lastFetchedId) {
-                const newItems = currentItems.filter(item => item.id > lastFetchedId);
-                if (newItems.length) {
+            if (!suppressSound) {
+                const newBookingItems = currentItems.filter(item => {
+                    return normalizeType(item.type) === 'booking' && Number(item.id) > lastFetched.booking;
+                });
+                const newContactItems = currentItems.filter(item => {
+                    return normalizeType(item.type) === 'contact' && Number(item.id) > lastFetched.contact;
+                });
+
+                if (newBookingItems.length || newContactItems.length) {
                     playSound();
                     if (typeof showToast === 'function') {
-                        if (newItems.length === 1) {
-                            showToast(`Có đặt bàn mới: ${newItems[0].message || ''}`, 'info');
-                        } else {
-                            showToast(`Có ${newItems.length} đặt bàn mới`, 'info');
+                        if (newBookingItems.length) {
+                            if (newBookingItems.length === 1) {
+                                showToast(`Có đặt bàn mới: ${newBookingItems[0].message || ''}`, 'info');
+                            } else {
+                                showToast(`Có ${newBookingItems.length} đặt bàn mới`, 'info');
+                            }
+                        }
+                        if (newContactItems.length) {
+                            if (newContactItems.length === 1) {
+                                showToast(`Bạn có liên hệ mới: ${newContactItems[0].message || ''}`, 'info');
+                            } else {
+                                showToast(`Có ${newContactItems.length} liên hệ mới`, 'info');
+                            }
                         }
                     }
                 }
             }
 
-            if (latestId > lastFetchedId) {
-                lastFetchedId = latestId;
-            }
+            lastFetched.booking = Math.max(lastFetched.booking, latestIds.booking || 0);
+            lastFetched.contact = Math.max(lastFetched.contact, latestIds.contact || 0);
+
             if (suppressSound) {
                 suppressSound = false;
             }
@@ -221,7 +321,18 @@ document.addEventListener('DOMContentLoaded', () => {
     if (markAllBtn) {
         markAllBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            markReadUpTo(latestId);
+            markReadAll();
+        });
+    }
+
+    if (tabButtons.length) {
+        tabButtons.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tab.classList.add('active');
+                currentFilter = tab.dataset.filter || 'all';
+                renderList(currentItems);
+            });
         });
     }
 
@@ -229,8 +340,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const item = e.target.closest('.notify-item');
         if (!item) return;
         const id = parseInt(item.dataset.id || '0', 10);
+        const type = item.dataset.type || 'booking';
         const url = item.dataset.url;
-        markReadUpTo(id);
+        markRead(type, id);
         if (url) {
             window.location.href = url;
         }

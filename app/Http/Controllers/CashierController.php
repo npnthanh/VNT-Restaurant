@@ -6,8 +6,11 @@ use App\Models\Table;
 use App\Models\Product;
 use App\Models\Invoice;
 use App\Models\CategoryProduct;
+use App\Models\Booking;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class CashierController extends Controller
 {
@@ -18,8 +21,30 @@ class CashierController extends Controller
         $tables = Table::with('area')->get();
         $products = Product::all();
 
+        $staff = auth('staff')->user();
+        $locationId = null;
+        if ($staff && !empty($staff->location_code)) {
+            $locationId = DB::table('location')
+                ->where('code', $staff->location_code)
+                ->value('id');
+        }
+
+        $bookingQuery = Booking::with('table')
+            ->whereIn('status', ['waiting', 'assigned'])
+            ->where('booking_time', '>=', now())
+            ->orderBy('booking_time');
+
+        if ($locationId) {
+            $bookingQuery->where('location_id', $locationId);
+        }
+
+        $bookings = $bookingQuery->get();
+        $bookingGroups = $bookings->groupBy(function ($booking) {
+            return Carbon::parse($booking->booking_time)->toDateString();
+        });
+
         return view('pos.cashier', compact(
-            'areas', 'categories', 'tables', 'products'
+            'areas', 'categories', 'tables', 'products', 'bookingGroups'
         ));
     }
 

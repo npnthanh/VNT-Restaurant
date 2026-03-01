@@ -134,7 +134,76 @@
                 </div>
 
                 <div class="tab-content booking" id="tab-booking">
-                    <!-- ĐẶT TRƯỚC (để trống cũng được) -->
+                    <div class="booking-board">
+                        <div class="booking-toolbar">
+                            <div class="booking-title">
+                                <i class="fa-regular fa-calendar"></i>
+                                Lịch đặt trước
+                            </div>
+                            <div class="booking-legend">
+                                <div class="legend-item">
+                                    <span class="legend-dot"></span>
+                                    Bình thường
+                                </div>
+                                <div class="legend-item urgent">
+                                    <span class="legend-dot"></span>
+                                    Sắp đến (<= 30p)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="booking-calendar" id="bookingCalendar">
+                            @forelse(($bookingGroups ?? collect()) as $date => $bookings)
+                                <div class="booking-day" data-date="{{ $date }}">
+                                    <div class="booking-day-header">
+                                        <div class="booking-day-title">
+                                            <span class="booking-day-date">{{ \Carbon\Carbon::parse($date)->format('d/m/Y') }}</span>
+                                        </div>
+                                        <div class="booking-day-count">{{ $bookings->count() }} đặt</div>
+                                    </div>
+                                    <div class="booking-day-list">
+                                        @foreach($bookings as $booking)
+                                            @php
+                                                $bookingTime = \Carbon\Carbon::parse($booking->booking_time);
+                                                $tableName = $booking->table ? $booking->table->name : 'Chưa xếp bàn';
+                                                $statusLabel = match($booking->status) {
+                                                    'waiting' => 'Chờ xác nhận',
+                                                    'assigned' => 'Đã xếp bàn',
+                                                    'received' => 'Đã nhận bàn',
+                                                    'cancel' => 'Đã hủy',
+                                                    default => 'Chờ xử lý'
+                                                };
+                                            @endphp
+                                            <div class="booking-card"
+                                                data-booking-id="{{ $booking->id }}"
+                                                data-booking-time="{{ $bookingTime->format('Y-m-d\\TH:i:sP') }}"
+                                                data-status="{{ $booking->status }}">
+                                                <div class="booking-time">
+                                                    <div class="booking-time-hour">{{ $bookingTime->format('H:i') }}</div>
+                                                    <div class="booking-time-date">{{ $bookingTime->format('d/m') }}</div>
+                                                </div>
+                                                <div class="booking-body">
+                                                    <div class="booking-name">{{ $booking->customer_name }}</div>
+                                                    <div class="booking-meta">
+                                                        <span>{{ $booking->guest_count }} khách</span>
+                                                        <span class="dot">•</span>
+                                                        <span>{{ $booking->phone }}</span>
+                                                    </div>
+                                                    <div class="booking-sub">
+                                                        <span>{{ $tableName }}</span>
+                                                        <span class="dot">•</span>
+                                                        <span class="booking-status {{ $booking->status }}">{{ $statusLabel }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="booking-empty">Chưa có đặt bàn trước.</div>
+                            @endforelse
+                        </div>
+                    </div>
                 </div>
             </div>
 

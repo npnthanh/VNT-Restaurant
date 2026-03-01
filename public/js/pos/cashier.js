@@ -745,12 +745,33 @@ payMethodRadios.forEach(radio => {
         }
     }
 
+    /* ================= BOOKING TAB HIGHLIGHT ================= */
+    function updateBookingHighlight() {
+        const cards = document.querySelectorAll('.booking-card[data-booking-time]');
+        if (!cards.length) return;
+        const now = new Date();
+        cards.forEach(card => {
+            const timeValue = card.dataset.bookingTime;
+            if (!timeValue) return;
+            const bookingTime = new Date(timeValue);
+            if (Number.isNaN(bookingTime.getTime())) return;
+            const diff = bookingTime.getTime() - now.getTime();
+            if (diff >= 0 && diff <= 30 * 60 * 1000) {
+                card.classList.add('soon');
+            } else {
+                card.classList.remove('soon');
+            }
+        });
+    }
+
     /* ================= INIT ================= */
     loadOrder();
     updateTableStatus();
     renderOrderList();
     updateServicingCount();
     checkBookingFromUrl();
+    updateBookingHighlight();
+    setInterval(updateBookingHighlight, 60000);
     paginateTables();
     paginateMenu();
 

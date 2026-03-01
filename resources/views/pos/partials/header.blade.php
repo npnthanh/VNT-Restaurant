@@ -23,7 +23,9 @@
                     <button type="button" class="notify-mark" id="notifyMarkAll">Đánh dấu đã đọc</button>
                 </div>
                 <div class="notify-tabs">
-                    <button type="button" class="notify-tab active">Tất cả</button>
+                    <button type="button" class="notify-tab active" data-filter="all">Tất cả</button>
+                    <button type="button" class="notify-tab" data-filter="booking">Đặt bàn</button>
+                    <button type="button" class="notify-tab" data-filter="contact">Liên hệ</button>
                 </div>
                 <div class="notify-list" id="notifyList">
                     <div class="notify-empty">Chưa có thông báo.</div>

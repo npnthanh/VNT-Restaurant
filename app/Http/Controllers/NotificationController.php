@@ -25,7 +25,7 @@ class NotificationController extends Controller
                 ->value('id');
         }
 
-        $query = DB::table('booking')
+        $bookingQuery = DB::table('booking')
             ->select(
                 'booking.id',
                 'booking.customer_name',
@@ -36,20 +36,22 @@ class NotificationController extends Controller
                 'booking.created_at',
                 'booking.table_id'
             )
-            ->orderByDesc('booking.id')
-            ->limit($limit);
+            ->orderByDesc('booking.id');
 
         if ($locationId) {
-            $query->where('booking.location_id', $locationId);
+            $bookingQuery->where('booking.location_id', $locationId);
         }
 
-        $bookings = $query->get();
+        $bookings = $bookingQuery->limit($limit)->get();
 
-        $items = $bookings->map(function ($booking) {
+        $bookingItems = $bookings->map(function ($booking) {
             $timeValue = $booking->created_at ?: $booking->booking_time;
             $timeText = '';
+            $timeSort = 0;
             if (!empty($timeValue)) {
-                $timeText = Carbon::parse($timeValue)->format('H:i d/m/Y');
+                $timeParsed = Carbon::parse($timeValue);
+                $timeText = $timeParsed->format('H:i d/m/Y');
+                $timeSort = $timeParsed->getTimestamp();
             }
 
             $guestText = $booking->guest_count ? $booking->guest_count . ' khách' : 'Chưa rõ số khách';
@@ -62,15 +64,68 @@ class NotificationController extends Controller
                 'message' => trim($customerName . ' • ' . $guestText),
                 'time' => $timeText,
                 'status' => $booking->status,
-                'url' => url('/pos/booking')
+                'url' => url('/pos/booking'),
+                'sort_time' => $timeSort,
             ];
         });
 
-        $latestId = $bookings->max('id') ?? 0;
+        $contacts = DB::table('contact')
+            ->select(
+                'contact.id',
+                'contact.name',
+                'contact.subject',
+                'contact.status',
+                'contact.created_at'
+            )
+            ->orderByDesc('contact.id')
+            ->limit($limit)
+            ->get();
+
+        $contactItems = $contacts->map(function ($contact) {
+            $timeText = '';
+            $timeSort = 0;
+            if (!empty($contact->created_at)) {
+                $timeParsed = Carbon::parse($contact->created_at);
+                $timeText = $timeParsed->format('H:i d/m/Y');
+                $timeSort = $timeParsed->getTimestamp();
+            }
+
+            $contactName = $contact->name ?: 'Khách hàng';
+            $contactSubject = $contact->subject ?: 'Liên hệ';
+
+            return [
+                'id' => (int) $contact->id,
+                'type' => 'contact',
+                'title' => 'Bạn có liên hệ mới',
+                'message' => trim($contactName . ' • ' . $contactSubject),
+                'time' => $timeText,
+                'status' => $contact->status,
+                'url' => url('/pos/contact'),
+                'sort_time' => $timeSort,
+            ];
+        });
+
+        $items = $bookingItems
+            ->concat($contactItems)
+            ->sortByDesc('sort_time')
+            ->take($limit)
+            ->values()
+            ->map(function ($item) {
+                unset($item['sort_time']);
+                return $item;
+            });
+
+        $latestIds = [
+            'booking' => (int) ($bookings->max('id') ?? 0),
+            'contact' => (int) ($contacts->max('id') ?? 0),
+        ];
+
+        $latestId = max($latestIds['booking'], $latestIds['contact']);
 
         return response()->json([
             'items' => $items,
-            'latest_id' => (int) $latestId
+            'latest_id' => (int) $latestId,
+            'latest_ids' => $latestIds
         ]);
     }
 }
