@@ -10,13 +10,11 @@
         <section class="menu-banner">
             <div class="menu-banner-container">
                 <div class="menu-banner-text">
-                    <h1>🍽 Website Quản Lý Nhà Hàng</h1>
+                    <h1>ƯU ĐÃI</h1>
                     <p>
-                        Vai trò: Full Stack Web Developer
+                        Nơi cập nhật nhanh nhất những sự kiện nóng hổi, chương trình khuyến mại,
                         <br>
-                        Công nghệ: Laravel, PHP, MySQL, HTML, CSS, JavaScript
-                        <br>
-                        Phát triển hệ thống quản lý nhà hàng hoàn chỉnh gồm website người dùng và trang quản trị.
+                        khách hàng và thông tin thương hiệu.
                     </p>
                 </div>
             </div>
@@ -26,64 +24,80 @@
         <div class="menu-scroll-wrapper">
             <div class="fade-zone left"></div>
             <div class="menu-scroll" id="menuScroll">
-                <a href="#overview" class="active">Tổng quan</a>
-                <a href="#customer-site">Website khách hàng</a>
-                <a href="#admin-system">Hệ thống quản trị</a>
-                <a href="#architecture">CSDL & MVC</a>
+                <a href="#featured" class="active">Ưu đãi mới</a>
+                <a href="#all-promotions">Tất cả ưu đãi</a>
             </div>
             <div class="fade-zone right"></div>
         </div>
+
         <div class="container">
-            <div class="news-banner" id="overview">
-                <div class="news-banner-content">
-                    <img class="big-banner" src="{{ asset('images/news/news4.png') }}" alt="Website Quản Lý Nhà Hàng" />
-                    <div class="banner-text">
-                        <h2>Website Quản Lý Nhà Hàng</h2>
-                        <div class="banner-meta">
-                            <p><span class="label">Vai trò:</span> Full Stack Web Developer</p>
-                            <p><span class="label">Công nghệ:</span> Laravel, PHP, MySQL, HTML, CSS, JavaScript</p>
-                            <p>Phát triển hệ thống quản lý nhà hàng hoàn chỉnh gồm website người dùng và trang quản trị.</p>
+            @if($promotions->isNotEmpty())
+                @php
+                    $featuredPromotion = $promotions->first();
+                @endphp
+                <div class="news-banner" id="featured">
+                    <div class="news-banner-content">
+                        <img class="big-banner"
+                             src="{{ asset($featuredPromotion->images ?: 'images/news/news4.png') }}"
+                             alt="{{ $featuredPromotion->name }}" />
+                        <div class="banner-text">
+                            <h2>{{ $featuredPromotion->name }}</h2>
+                            <div class="banner-meta">
+                                @if(!empty($featuredPromotion->description))
+                                    <p>{{ $featuredPromotion->description }}</p>
+                                @endif
+                                <a class="banner-cta" href="#all-promotions">
+                                    <span class="icn">→</span>
+                                    <span class="txt">XEM NGAY</span>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="news-grid">
-                <div class="news-item" id="customer-site">
-                    <div class="news-content">
-                        <h3>Website khách hàng</h3>
-                        <ul class="news-list">
-                            <li>Xem danh sách cơ sở</li>
-                            <li>Xem thực đơn</li>
-                            <li>Đặt bàn trực tuyến</li>
-                        </ul>
+            @else
+                <div class="news-banner" id="featured">
+                    <div class="news-banner-content">
+                        <img class="big-banner" src="{{ asset('images/news/news4.png') }}" alt="Ưu đãi" />
+                        <div class="banner-text">
+                            <h2>Ưu đãi đang được cập nhật</h2>
+                            <div class="banner-meta">
+                                <p>Hiện chưa có chương trình khuyến mãi.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
+            @endif
 
-                <div class="news-item" id="admin-system">
-                    <div class="news-content">
-                        <h3>Hệ thống quản trị</h3>
-                        <ul class="news-list">
-                            <li>Quản lý khu vực, phòng và bàn</li>
-                            <li>Quản lý món ăn và nguyên liệu</li>
-                            <li>Quản lý khách hàng và nhân viên</li>
-                            <li>Quản lý lịch làm việc và chấm công</li>
-                            <li>Tính bảng lương nhân viên</li>
-                            <li>Quản lý nhập – xuất kho</li>
-                            <li>Trang thu ngân (Cashier/POS) bán hàng trực tiếp</li>
-                        </ul>
+            @php
+                $otherPromotions = $promotions->skip(1);
+            @endphp
+            <div class="news-grid" id="all-promotions">
+                @forelse($otherPromotions as $promotion)
+                    <div class="news-item" id="promotion-{{ $promotion->id }}">
+                        <a href="#promotion-{{ $promotion->id }}">
+                            <img class="news-img"
+                                 src="{{ asset($promotion->images ?: 'images/news/news4.png') }}"
+                                 alt="{{ $promotion->name }}">
+                            <div class="news-content">
+                                <h3>{{ $promotion->name }}</h3>
+                                @if(!empty($promotion->description))
+                                    <p>{{ \Illuminate\Support\Str::limit($promotion->description, 120) }}</p>
+                                @endif
+                                <a class="news-cta" href="#promotion-{{ $promotion->id }}">
+                                    <span class="icn">→</span>
+                                    <span class="txt">XEM NGAY</span>
+                                </a>
+                            </div>
+                        </a>
                     </div>
-                </div>
-
-                <div class="news-item" id="architecture">
-                    <div class="news-content">
-                        <h3>CSDL & Kiến trúc</h3>
-                        <ul class="news-list">
-                            <li>Thiết kế cơ sở dữ liệu quan hệ và xây dựng đầy đủ chức năng CRUD.</li>
-                            <li>Áp dụng mô hình MVC trong Laravel.</li>
-                        </ul>
+                @empty
+                    <div class="news-item">
+                        <div class="news-content">
+                            <h3>{{ $promotions->isEmpty() ? 'Chưa có ưu đãi' : 'Chưa có ưu đãi khác' }}</h3>
+                            <p>Vui lòng quay lại sau để cập nhật chương trình mới.</p>
+                        </div>
                     </div>
-                </div>
+                @endforelse
             </div>
         </div>
     </main>

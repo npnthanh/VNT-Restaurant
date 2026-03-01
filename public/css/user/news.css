@@ -205,6 +205,11 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  margin-top: 12px;
+  text-decoration: none;
+  color: #FFA827;
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
 .banner-cta img {
@@ -213,6 +218,7 @@
 
 .banner-cta .txt {
   font-weight: bold;
+  margin-left: 0;
 }
 
 .banner-text:hover .txt {
@@ -293,6 +299,23 @@
 
 .news-item:hover .txt {
   text-decoration: underline;
+}
+
+.news-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  text-decoration: none;
+}
+
+.news-cta .icn {
+  color: #FF8A00;
+  font-size: 14px;
+}
+
+.news-cta .txt {
+  margin-left: 0;
 }
 
 @media (max-width: 768px) {
