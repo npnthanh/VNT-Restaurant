@@ -36,6 +36,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const payTime = document.getElementById('payTime');
     const areaLinks = document.querySelectorAll('.area-filter a');
     const categoryLinks = document.querySelectorAll('.category-bar a');
+    const categoryScroll = document.getElementById('categoryScroll');
+    const catPrevBtn = document.querySelector('.cat-scroll-btn.left');
+    const catNextBtn = document.querySelector('.cat-scroll-btn.right');
     const menuBtn = document.getElementById('menuBtn');
     const dropdownMenu = document.getElementById('dropdownMenu');
     const logoutLink = document.getElementById('logoutLink');
@@ -233,6 +236,55 @@ payMethodRadios.forEach(radio => {
         });
     });
 
+    /* ================= CATEGORY SCROLL ================= */
+    const CAT_VISIBLE_COUNT = 10;
+
+    function updateCategoryScrollButtons() {
+        if (!categoryScroll || !catPrevBtn || !catNextBtn) return;
+        const maxScroll = categoryScroll.scrollWidth - categoryScroll.clientWidth;
+        const atStart = categoryScroll.scrollLeft <= 2;
+        const atEnd = categoryScroll.scrollLeft >= maxScroll - 2;
+        catPrevBtn.classList.toggle('is-hidden', atStart);
+        catNextBtn.classList.toggle('is-hidden', atEnd);
+    }
+
+    function scrollCategoryBy(delta) {
+        if (!categoryScroll) return;
+        categoryScroll.scrollBy({ left: delta, behavior: 'smooth' });
+    }
+
+    function applyCategoryItemWidth() {
+        if (!categoryScroll) return;
+        const list = categoryScroll.querySelector('.nav-category');
+        if (!list) return;
+        const items = list.querySelectorAll('li');
+        if (!items.length) return;
+        const gapValue = parseFloat(getComputedStyle(list).gap || '0') || 0;
+        const containerWidth = categoryScroll.clientWidth;
+        if (containerWidth <= 0) return;
+        const itemWidth = Math.floor((containerWidth - (CAT_VISIBLE_COUNT - 1) * gapValue) / CAT_VISIBLE_COUNT);
+        if (itemWidth <= 0) return;
+        items.forEach(item => {
+            item.style.flex = `0 0 ${itemWidth}px`;
+            item.style.maxWidth = `${itemWidth}px`;
+            item.style.minWidth = `${itemWidth}px`;
+        });
+        updateCategoryScrollButtons();
+    }
+
+    function refreshCategoryScroll() {
+        if (!categoryScroll || !catPrevBtn || !catNextBtn) return;
+        requestAnimationFrame(() => applyCategoryItemWidth());
+    }
+
+    if (categoryScroll && catPrevBtn && catNextBtn) {
+        catPrevBtn.addEventListener('click', () => scrollCategoryBy(-220));
+        catNextBtn.addEventListener('click', () => scrollCategoryBy(220));
+        categoryScroll.addEventListener('scroll', updateCategoryScrollButtons);
+        window.addEventListener('resize', applyCategoryItemWidth);
+        setTimeout(applyCategoryItemWidth, 0);
+    }
+
     /* ================= DEFAULT TAB ================= */
     function showTab(tabName) {
         tabLinks.forEach(link => {
@@ -250,6 +302,9 @@ payMethodRadios.forEach(radio => {
         const activeContent = document.getElementById(`tab-${tabName}`);
         if (activeContent) {
             activeContent.classList.add('active');
+        }
+        if (tabName === 'menu') {
+            refreshCategoryScroll();
         }
     }
     showTab('tables');
@@ -402,6 +457,9 @@ payMethodRadios.forEach(radio => {
 
     const activeContent = document.getElementById(`tab-${tab}`);
     if (activeContent) activeContent.classList.add('active');
+    if (tab === 'menu') {
+        refreshCategoryScroll();
+    }
 
     /* ================= RENDER ORDER LIST ================= */
     function formatPrice(num) {

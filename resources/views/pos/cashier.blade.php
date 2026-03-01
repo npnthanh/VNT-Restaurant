@@ -101,18 +101,26 @@
                 <!-- MENU TAB -->
                 <div class="tab-content menu" id="tab-menu">
                     <div class="category-bar">
-                        <ul class="nav-category">
-                            <li>
-                                <a href="#" data-category="all" class="category-link active">Tất cả</a>
-                            </li>
-                            @foreach($categories as $category)
+                        <button class="cat-scroll-btn left" type="button" aria-label="Xem danh mục trước">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <div class="category-scroll" id="categoryScroll">
+                            <ul class="nav-category">
                                 <li>
-                                    <a href="#" data-category="{{ $category->id }}" class="category-link">
-                                        {{ $category->name }}
-                                    </a>
+                                    <a href="#" data-category="all" class="category-link active">Tất cả</a>
                                 </li>
-                            @endforeach
-                        </ul>
+                                @foreach($categories as $category)
+                                    <li>
+                                        <a href="#" data-category="{{ $category->id }}" class="category-link">
+                                            {{ $category->name }}
+                                        </a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                        <button class="cat-scroll-btn right" type="button" aria-label="Xem danh mục tiếp">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
                     </div>
 
                     <div class="menu-grid item-to-paginate">
