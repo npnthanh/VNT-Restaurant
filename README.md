@@ -1,66 +1,175 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# VNT Restaurant
+
+Full-stack restaurant website and POS/back-office management system built with Laravel for a multi-branch F&B business.
 
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="public/images/logo/logo-user.png" alt="VNT Restaurant website logo" width="150">
+  <img src="public/images/logo/logo-pos.png" alt="VNT POS logo" width="150">
 </p>
 
-## About Laravel
+## Overview
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+This project is not a generic Laravel starter. It models the day-to-day operation of a restaurant business from customer discovery to booking, table service, checkout, stock movement, staff operations, and reporting.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+The product combines two interfaces in one codebase:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- A customer-facing website for menu browsing, branch discovery, contact, news, and table booking
+- A branch-aware POS/back-office interface for cashier, operations, inventory, staffing, permissions, and analytics
 
-## Learning Laravel
+## What This Repo Demonstrates
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- End-to-end business workflow design for a restaurant/POS-like product
+- Full-stack implementation with Laravel, Blade, Vanilla JavaScript, MySQL, and Vite
+- Real operational modules instead of isolated CRUD pages
+- Database-level business logic with triggers, views, and stored procedures
+- Role-based internal tooling for different staff responsibilities
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Product Modules
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+| Module | Main routes | What it covers |
+| --- | --- | --- |
+| Customer website | `/`, `/menu`, `/location`, `/news`, `/contact`, `/booking` | Brand site, searchable menu, branch information, contact intake, and table booking with pre-order support |
+| POS login and dashboard | `/pos/login`, `/pos/kiot` | Branch login, daily revenue snapshot, completed orders, active tables, and dashboard charts |
+| Cashier flow | `/pos/cashier`, `/pos/invoice` | Table service, order building, discount/promotion handling, payment methods, and invoice history |
+| Reservation management | `/pos/booking` | Booking queue, table assignment, booking detail, receive/cancel flow, and pre-ordered items |
+| Menu and promotions | `/pos/product`, `/pos/promotion` | Product catalog, categories, pricing, and promotional campaigns |
+| Multi-branch operations | `/pos/location`, `/pos/regions`, `/pos/table` | Branches, areas, regions, tables, status control, and operational mapping |
+| Inventory and recipe logic | `/pos/ingredient`, `/pos/import`, `/pos/export`, `/pos/inventory` | Ingredients, import/export, inventory checks, recipe usage, and stock deduction on checkout |
+| Customer and staff ops | `/pos/customer`, `/pos/staff`, `/pos/role`, `/pos/work-schedule`, `/pos/attendance`, `/pos/payroll` | CRM, role/permission management, shifts, attendance, and payroll |
+| Reporting and analytics | `/pos/daily-report`, `/pos/sales-report`, `/pos/staff-report`, `/pos/sales-analysis`, `/pos/product-analysis` | End-of-day reporting, sales trends, product insights, branch/staff comparisons, and gross profit views |
 
-## Laravel Sponsors
+## Core Workflow
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+```mermaid
+flowchart LR
+    A[Customer website] --> B[Menu browsing and booking]
+    B --> C[Booking queue]
+    C --> D[POS booking and cashier]
+    D --> E[Table service and order editing]
+    E --> F[Checkout]
+    F --> G[Invoice records]
+    F --> H[use_stock stored procedure]
+    H --> I[inventory_log and product availability]
+    G --> J[Reports and analytics]
+    I --> J
+```
 
-### Premium Partners
+## Technical Highlights
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+- `Laravel 9` application with Blade-rendered website and internal POS screens
+- Custom `staff` authentication guard for employee login
+- Fine-grained role permissions defined in `config/permissions.php`
+- MySQL dump includes:
+  - triggers for code generation and totals
+  - `use_stock` stored procedure for inventory deduction during checkout
+  - `product_available` view for availability and cost visibility
+- Dashboard and analysis screens use aggregated revenue, cost, and product data rather than static demo widgets
+- Sample operational data is included to make the repo demonstrable without building seed data from scratch
 
-## Contributing
+## Local Demo Setup
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+This project is easiest to run in an Apache/XAMPP-style environment because several front-end assets and requests assume the repo is served from:
 
-## Code of Conduct
+`http://localhost/VNT-Restaurant/public`
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Prerequisites
 
-## Security Vulnerabilities
+- PHP 8+
+- Composer
+- Node.js + npm
+- MySQL or MariaDB
+- Apache/XAMPP or an equivalent local web server
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Steps
 
-## License
+1. Clone the repository into `C:\xampp\htdocs\VNT-Restaurant`
+2. Install PHP dependencies:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+composer install
+```
+
+3. Install front-end dependencies:
+
+```bash
+npm install
+```
+
+4. Copy environment file:
+
+```bash
+copy .env.example .env
+```
+
+5. Create a database named `vnt_restaurant`
+6. Import `database/vnt_restaurant.sql`
+7. Generate the app key:
+
+```bash
+php artisan key:generate
+```
+
+8. Build assets:
+
+```bash
+npm run build
+```
+
+9. Open the application at:
+
+```text
+http://localhost/VNT-Restaurant/public
+```
+
+## Demo Login
+
+After importing the sample database, you can reset a demo staff password with Tinker and use the first staff account already present in the dump:
+
+```bash
+php artisan tinker
+```
+
+```php
+$user = App\Models\Staff::first();
+$user->password = bcrypt('Password@123');
+$user->save();
+$user->only(['name', 'phone', 'location_code']);
+```
+
+Then log in at `/pos/login` with:
+
+- `location_code`: value returned by the snippet
+- `phone`: value returned by the snippet
+- `password`: `Password@123`
+
+## Database Notes
+
+`database/vnt_restaurant.sql` is the fastest way to evaluate the project because it already contains:
+
+- schema
+- sample master data
+- sample operational data
+- triggers
+- stored procedure(s)
+- SQL view(s)
+
+Migrations are included in the repo, but the SQL dump is the most complete representation of the business logic and demo data currently used by the application.
+
+## Tech Stack
+
+- Laravel 9
+- PHP 8
+- Blade templates
+- Vanilla JavaScript
+- MySQL / MariaDB
+- Chart.js
+- Vite
+- HTML/CSS
+
+## What I Would Improve Next
+
+- Add real UI screenshots or a short demo video to the README
+- Deploy a public demo URL for faster recruiter review
+- Add feature tests for booking, cashier checkout, and stock updates
+- Refactor remaining hardcoded `/VNT-Restaurant/public` paths into route/asset-driven configuration
+

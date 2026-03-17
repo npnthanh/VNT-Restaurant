@@ -1,8 +1,8 @@
 {
-    "name": "laravel/laravel",
+    "name": "vnt/restaurant-pos",
     "type": "project",
-    "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
+    "description": "Restaurant website and POS/back-office management system built with Laravel.",
+    "keywords": ["laravel", "restaurant", "pos", "booking", "inventory", "payroll"],
     "license": "MIT",
     "require": {
         "php": "^8.0.2",
