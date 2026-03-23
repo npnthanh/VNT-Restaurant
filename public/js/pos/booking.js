@@ -1479,7 +1479,7 @@ document.querySelectorAll('.receive-icon').forEach(icon => {
         if (!await openConfirmDialog('Xác nhận khách đã đến và nhận bàn?')) return;
 
         try {
-            const res = await fetch(`/VNT-Restaurant/public/pos/booking/${id}/receive`, {
+            const res = await fetch(`${BASE_URL}/pos/booking/${id}/receive`, {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,

@@ -4,46 +4,40 @@
     @push('css')
         <link rel="stylesheet" href="{{ asset('css/user/menu.css') }}">
     @endpush
-        <meta name="filter-url" content="{{ url('/menu/filter') }}">
-    <!-- CONTENT START -->
+    <meta name="filter-url" content="{{ url('/menu/filter') }}">
+
     <main class="menu-page">
-        <!-- Banner -->
         <section class="menu-banner">
             <div class="menu-banner-container">
                 <div class="menu-banner-text">
                     <h1>Thực đơn</h1>
-                    <p>Thăng hoa vị giác với 300+ món nhậu đặc sắc, lẩu nướng, hải sản
-                        <br>
-                        được chuẩn bị từ những đầu bếp chuyên nghiệp hàng đầu.
+                    <p>
+                        Thăng hoa vị giác với hàng trăm món nhậu đặc sắc, lẩu nướng và hải sản
+                        được chuẩn bị bởi đội ngũ bếp chuyên nghiệp.
                     </p>
                 </div>
                 <div class="menu-banner-search">
-                    <input type="text" placeholder="Tìm kiếm món ăn" />
-                    <button><i class="fa fa-search"></i></button>
+                    <input type="text" id="menuSearchInput" placeholder="Tìm kiếm món ăn" autocomplete="off">
+                    <button type="button" aria-label="Tìm kiếm"><i class="fa fa-search"></i></button>
                 </div>
             </div>
         </section>
 
-        <!-- Danh mục -->
         <div class="menu-scroll-wrapper">
             <div class="fade-zone left"></div>
             <button class="scroll-btn left" id="scrollLeft"><i class="fa fa-chevron-left"></i></button>
             <div class="menu-scroll" id="menuScroll">
                 <a href="#" class="category-item active" data-category="all">Tất cả</a>
                 @foreach($categories as $category)
-                    <a href="#" class="category-item" data-category="{{ $category->id }}">
-                        {{ $category->name }}
-                    </a>
+                    <a href="#" class="category-item" data-category="{{ $category->id }}">{{ $category->name }}</a>
                 @endforeach
             </div>
             <button class="scroll-btn right" id="scrollRight"><i class="fa fa-chevron-right"></i></button>
             <div class="fade-zone right"></div>
         </div>
 
-        <!-- Danh sách món -->
         <section id="productContent"></section>
     </main>
-    <!-- CONTENT START -->
 
     <div class="cart-summary-trigger" id="openCart">
         <div class="summary-content">
@@ -75,11 +69,11 @@
                 </div>
                 <div class="summary-row-sub">
                     <p class="note-text">
-                        Đơn giá tạm tính chỉ mang tính chất tham khảo.<br>
-                        Liên hệ hotline để Tự Do có thể tư vấn cho bạn chu đáo nhất.
+                        Đơn giá tạm tính chỉ mang tính chất tham khảo.
+                        Liên hệ hotline để Tới Bến tư vấn cho bạn nhanh hơn.
                     </p>
                     <button class="btn-clear-all" id="clearCart">
-                        <i class="fa fa-sync"></i> Xoá hết tạm tính
+                        <i class="fa fa-sync"></i> Xóa hết tạm tính
                     </button>
                 </div>
                 <div class="cart-items-list" id="modalItems"></div>

@@ -60,7 +60,7 @@
 
 /* Banner */
 .menu-banner {
-  background-image: url('/VNT-Restaurant/public/images/background/header-bg.jpg');
+  background-image: url('../../images/background/header-bg.jpg');
   color: white;
   padding: 60px 0 30px;
 }

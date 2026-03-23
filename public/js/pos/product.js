@@ -10,6 +10,11 @@ const filters = {
 
 document.documentElement.classList.add('js');
 
+const BASE_URL = document
+  .querySelector('meta[name="base-url"]')
+  ?.getAttribute('content') || window.location.origin;
+const POS_BASE_URL = `${BASE_URL}/pos`;
+
 var productSelectControls = [];
 
 var closeProductSelectMenus = function () {
@@ -271,7 +276,6 @@ document.querySelectorAll('.group-box').forEach(box => {
 
 document.addEventListener('DOMContentLoaded', () => {
   // ====== CẤU HÌNH CHUNG ======
-  const BASE_URL = window.location.origin + "/VNT-Restaurant/public/pos";
   const overlay = document.getElementById('productFormOverlay');
   const btnOpen = document.getElementById('btnOpenForm');
   const btnCloseHeader = document.getElementById('btnCloseHeader');
@@ -393,7 +397,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const keyword = searchInput.value.trim();
     if (!keyword) { suggestBox.innerHTML = ""; suggestBox.style.display = "none"; return; }
     try {
-      const res = await fetch(`${BASE_URL}/ingredients/search?keyword=${keyword}`);
+      const res = await fetch(`${POS_BASE_URL}/ingredients/search?keyword=${keyword}`);
       const data = await res.json();
       if (!data.length) {
         suggestBox.innerHTML = `<div class="no-result">Không tìm thấy</div>`;
@@ -479,7 +483,7 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('delete_image', document.getElementById('delete_image').value);
         if (file) formData.append('img', file);
 
-        const url = editingProductId ? `${BASE_URL}/products/${editingProductId}/update` : `${BASE_URL}/products/store`;
+        const url = editingProductId ? `${POS_BASE_URL}/products/${editingProductId}/update` : `${POS_BASE_URL}/products/store`;
         try {
           const res = await fetch(url, { method: 'POST', body: formData });
           const data = await res.json();
@@ -508,13 +512,13 @@ document.addEventListener('DOMContentLoaded', () => {
         editingProductId = id;
 
         try {
-          const res = await fetch(`${BASE_URL}/products/${id}`);
+          const res = await fetch(`${POS_BASE_URL}/products/${id}`);
           const data = await res.json();
           const p = data.product;
           resetImageBox();
 
           if (p.img) {
-            const fullPath = `${window.location.origin}/VNT-Restaurant/public/${p.img}`;
+            const fullPath = `${BASE_URL}/${String(p.img).replace(/^\/+/, '')}`;
             previewImage.src = fullPath;
             previewImage.style.display = "block";
             removeImageBtn.style.display = "block";
@@ -555,7 +559,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!await openConfirmDialog('Bạn có chắc muốn xóa sản phẩm này?')) return;
 
             try {
-                const res = await fetch(`${BASE_URL}/products/${id}`, {
+                const res = await fetch(`${POS_BASE_URL}/products/${id}`, {
                     method: 'DELETE',
                     headers: { 
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
@@ -696,7 +700,7 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
     if (editId) {
-      fetch(`/VNT-Restaurant/public/pos/product-category/update/${editId}`, {
+      fetch(`${POS_BASE_URL}/product-category/update/${editId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -759,7 +763,7 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
     if (!await openConfirmDialog("Bạn có chắc muốn xóa?")) return;
-    fetch(`/VNT-Restaurant/public/pos/product-category/delete/${editId}`, {
+    fetch(`${POS_BASE_URL}/product-category/delete/${editId}`, {
       method: "DELETE",
       headers: { "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content }
     })

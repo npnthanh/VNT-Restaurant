@@ -1,5 +1,10 @@
 document.documentElement.classList.add('js');
 
+const BASE_URL = document
+  .querySelector('meta[name="base-url"]')
+  ?.getAttribute('content') || window.location.origin;
+const POS_BASE_URL = `${BASE_URL}/pos`;
+
 var tableSelectControls = [];
 
 var closeTableSelectMenus = function () {
@@ -347,7 +352,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // UPDATE
         if (editId) {
-            fetch(`/VNT-Restaurant/public/pos/area/update/${editId}`, {
+            fetch(`${POS_BASE_URL}/area/update/${editId}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -415,7 +420,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         if (!await openConfirmDialog("Bạn có chắc muốn xóa?")) return;
 
-        fetch(`/VNT-Restaurant/public/pos/area/delete/${editId}`, {
+        fetch(`${POS_BASE_URL}/area/delete/${editId}`, {
         method: "DELETE",
         headers: { "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content }
         })
@@ -460,7 +465,7 @@ document.addEventListener("DOMContentLoaded", function () {
         .querySelector('meta[name="csrf-token"]')
         .getAttribute("content");
 
-    const BASE_URL = window.routes.baseUrl;
+    const BASE_URL = window.routes?.baseUrl || window.location.origin;
     const tableFormOverlay = document.getElementById("tableFormOverlay");
     const btnCreate = document.querySelector(".btn-create");
     const btnCloseHeader = document.getElementById("btnCloseHeader");

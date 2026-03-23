@@ -31,6 +31,10 @@ function timeAgo(dateString) {
     return years + ' năm trước';
 }
 
+const baseUrl =
+    document.querySelector('meta[name="base-url"]')
+    ?.getAttribute('content') || window.location.origin;
+
 document.addEventListener('DOMContentLoaded', () => {
 
     document.querySelectorAll('section').forEach(section => {
@@ -44,10 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
         let currentRange   = 'today';
         let currentMetric  = 'quantity';
         let chart = null;
-
-        const baseUrl =
-            document.querySelector('meta[name="base-url"]')
-            ?.getAttribute('content') || '';
 
         /* ================= API ================= */
         function getApi() {
@@ -200,7 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
         loadData();
     });
 
-    fetch('/VNT-Restaurant/public/pos/dashboard/activity')
+    fetch(`${baseUrl}/pos/dashboard/activity`)
     .then(r => r.json())
     .then(data => {
 

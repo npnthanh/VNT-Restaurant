@@ -1,5 +1,3 @@
-
-
 document.documentElement.classList.add('js');
 
 var customerSelectControls = [];
@@ -237,7 +235,10 @@ document.addEventListener("DOMContentLoaded", function () {
 document.addEventListener('DOMContentLoaded', () => {
 
     // ====== CẤU HÌNH CHUNG ======
-    const BASE_URL = window.location.origin + "/VNT-Restaurant/public/pos";
+    const baseUrl = document
+        .querySelector('meta[name="base-url"]')
+        ?.getAttribute('content') || window.location.origin;
+    const BASE_URL = `${baseUrl}/pos`;
 
     // ====== ELEMENTS ======
     const overlay = document.getElementById('customerFormOverlay');

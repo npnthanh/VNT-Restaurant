@@ -1,4 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
+    const baseUrl = document
+        .querySelector('meta[name="base-url"]')
+        ?.getAttribute('content') || window.location.origin;
+    const posBaseUrl = `${baseUrl}/pos`;
+
     function getErrorMessage(payload, fallback) {
         if (payload && payload.errors) {
             const keys = Object.keys(payload.errors);
@@ -202,7 +207,7 @@ document.addEventListener('DOMContentLoaded', function() {
         resetTypeForm(); 
         deleteBtn.style.display = 'none'; 
         modal.style.display = 'flex';
-        typeForm.action = '/VNT-Restaurant/public/pos/promotion-type';
+        typeForm.action = `${posBaseUrl}/promotion-type`;
         typeForm.method = 'POST';
     });
 
@@ -218,7 +223,7 @@ document.addEventListener('DOMContentLoaded', function() {
         deleteBtn.style.display = 'inline-block';
         modal.style.display = 'flex';
 
-        typeForm.action = `/VNT-Restaurant/public/pos/promotion-type/${selectedId}`;
+        typeForm.action = `${posBaseUrl}/promotion-type/${selectedId}`;
         typeForm.method = 'POST';
 
         let methodInput = typeForm.querySelector('input[name="_method"]'); 
@@ -241,7 +246,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const formData = new FormData(typeForm);
         formData.append('_method', 'DELETE');
 
-        fetch(`/VNT-Restaurant/public/pos/promotion-type/${selectedId}`, {
+        fetch(`${posBaseUrl}/promotion-type/${selectedId}`, {
             method: 'POST',
             body: formData,
             headers: jsonHeaders()
@@ -313,7 +318,7 @@ document.addEventListener('DOMContentLoaded', function() {
             formPromotion.querySelector('#start_date').value = this.querySelector('td:nth-child(7)').innerText;
             formPromotion.querySelector('#end_date').value = this.querySelector('td:nth-child(8)').innerText;
 
-            formPromotion.action = `/VNT-Restaurant/public/pos/promotion/${id}`;
+            formPromotion.action = `${posBaseUrl}/promotion/${id}`;
             formPromotion.method = 'POST';
 
             let methodInput = formPromotion.querySelector('input[name="_method"]');
@@ -339,7 +344,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const formData = new FormData(formPromotion);
         formData.append('_method', 'DELETE');
 
-        fetch(`/VNT-Restaurant/public/pos/promotion/${id}`, {
+        fetch(`${posBaseUrl}/promotion/${id}`, {
             method: 'POST',
             body: formData,
             headers: jsonHeaders()
@@ -391,7 +396,7 @@ document.addEventListener('DOMContentLoaded', function() {
         formPromotion.reset();
         const methodInput = formPromotion.querySelector('input[name="_method"]');
         if (methodInput) methodInput.remove();
-        formPromotion.action = '/VNT-Restaurant/public/pos/promotion';
+        formPromotion.action = `${posBaseUrl}/promotion`;
         formPromotion.method = 'POST';
         deletePromotionBtn.style.display = 'none';
     }

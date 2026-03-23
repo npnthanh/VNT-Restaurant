@@ -68,9 +68,13 @@ flowchart LR
 
 ## Local Demo Setup
 
-This project is easiest to run in an Apache/XAMPP-style environment because several front-end assets and requests assume the repo is served from:
+This project can be served either from a virtual host that points directly to `public/` or from a subdirectory in an Apache/XAMPP-style environment.
 
-`http://localhost/VNT-Restaurant/public`
+Set `APP_URL` to the exact URL you use locally, for example:
+
+- `http://localhost`
+- `http://vnt-restaurant.test`
+- `http://localhost/my-app/public`
 
 ### Prerequisites
 
@@ -115,10 +119,10 @@ php artisan key:generate
 npm run build
 ```
 
-9. Open the application at:
+9. Open the application at the URL that matches your web server and `APP_URL`, for example:
 
 ```text
-http://localhost/VNT-Restaurant/public
+http://localhost
 ```
 
 ## Demo Login
@@ -171,5 +175,4 @@ Migrations are included in the repo, but the SQL dump is the most complete repre
 - Add real UI screenshots or a short demo video to the README
 - Deploy a public demo URL for faster recruiter review
 - Add feature tests for booking, cashier checkout, and stock updates
-- Refactor remaining hardcoded `/VNT-Restaurant/public` paths into route/asset-driven configuration
-
+- Add a production deployment guide for Apache/Nginx root-domain hosting

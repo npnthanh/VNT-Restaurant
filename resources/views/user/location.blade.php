@@ -4,22 +4,23 @@
     @push('css')
         <link rel="stylesheet" href="{{ asset('css/user/location.css') }}">
     @endpush
-    <!-- CONTENT START -->
+
     <main class="menu-page">
-        <!-- Banner -->
         <section class="menu-banner">
             <div class="menu-banner-container">
                 <div class="menu-banner-text">
-                    <h1>{{ $locations->count() }} Cơ Sở</h1>
-                    <p>Luôn sẵn sàng đáp ứng mọi nhu cầu tổ chức tiệc:
-                        <br>
-                        sinh nhật, liên hoan, gặp mặt bạn bè, xem bóng đá...
+                    <h1>{{ $locations->count() }} Cơ sở</h1>
+                    <p>
+                        Luôn sẵn sàng cho những buổi liên hoan, sinh nhật, gặp mặt bạn bè
+                        và mọi dịp tụ họp cần không gian thoải mái.
                     </p>
+                </div>
+                <div class="menu-banner-actions">
+                    <a href="{{ route('contact') }}" class="hero-outline-btn">THAM GIA HỘI VIÊN</a>
                 </div>
             </div>
         </section>
 
-        <!-- Danh mục -->
         <div class="menu-scroll-wrapper">
             <div class="fade-zone left"></div>
             <div class="menu-scroll" id="menuScroll">
@@ -70,7 +71,6 @@
             @endif
         </section>
     </main>
-    <!-- CONTENT START -->
 @endsection
 
 @push('js')

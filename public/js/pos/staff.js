@@ -20,6 +20,11 @@ async function readJsonResponse(res) {
     return res.json();
 }
 
+const baseUrl = document
+    .querySelector('meta[name="base-url"]')
+    ?.getAttribute('content') || window.location.origin;
+const posBaseUrl = `${baseUrl}/pos`;
+
 document.addEventListener("DOMContentLoaded", function () {
     // ELEMENTS
     const searchInput = document.querySelector(".input-text");
@@ -305,7 +310,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // UPDATE
         if (editId) {
             try {
-                const res = await fetch(`/VNT-Restaurant/public/pos/role/update/${editId}`, {
+                const res = await fetch(`${posBaseUrl}/role/update/${editId}`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -557,7 +562,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ====== CẤU HÌNH CHUNG ======
-    const BASE_URL = window.location.origin + "/VNT-Restaurant/public/pos";
+    const BASE_URL = posBaseUrl;
 
     // ====== ELEMENTS ======
     const overlay = document.getElementById('staffForm');
@@ -1126,7 +1131,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function loadStaffImage(imgFileName) {
         resetImageBox();
         if (imgFileName) {
-            previewImage.src = `/VNT-Restaurant/public/images/staff/${imgFileName}`;
+            previewImage.src = `${baseUrl}/images/staff/${imgFileName}`;
             previewImage.style.display = "block";
             removeImageBtn.style.display = "block";
             addText.style.display = "none";
@@ -1313,7 +1318,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const s = data.staff;
                     resetImageBox();
                     if (s.img) {
-                        previewImage.src = `${window.location.origin}/VNT-Restaurant/public/images/staff/${s.img}`;
+                        previewImage.src = `${baseUrl}/images/staff/${s.img}`;
                         previewImage.style.display = "block";
                         removeImageBtn.style.display = "block";
                         addText.style.display = "none";

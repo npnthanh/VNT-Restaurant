@@ -8,6 +8,10 @@ window.filters = {
     to: null
 };
 
+const BASE_URL = document
+    .querySelector('meta[name="base-url"]')
+    ?.getAttribute('content') || window.location.origin;
+
 document.addEventListener('DOMContentLoaded', function() {
     const modal = document.getElementById('contactModal');
     const closeBtn = document.querySelector('.close');
@@ -65,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
         btn.innerText = 'Đang xử lý...';
         btn.disabled = true;
 
-        fetch(`/VNT-Restaurant/public/pos/contact/update-status/${id}`, {
+        fetch(`${BASE_URL}/pos/contact/update-status/${id}`, {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,

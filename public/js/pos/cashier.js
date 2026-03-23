@@ -1,5 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     updateServicingCount();
+    const appBaseUrl = document
+        .querySelector('meta[name="base-url"]')
+        ?.getAttribute('content') || window.location.origin;
     const csrfToken = document
     .querySelector('meta[name="csrf-token"]')
     ?.getAttribute('content');
@@ -56,6 +59,14 @@ document.addEventListener('DOMContentLoaded', () => {
     let selectedPromotion = null;
     let currentTablePage = 1;
     let currentMenuPage = 1;
+    
+    const confirmAction = (message, options = {}) => {
+        if (typeof window.openConfirmDialog === 'function') {
+            return window.openConfirmDialog(message, options);
+        }
+        return Promise.resolve(window.confirm(message || 'Xác nhận?'));
+    };
+    const openConfirmDialog = confirmAction;
     
     const typeMap = {
     Food: 'Đồ ăn',
@@ -989,7 +1000,7 @@ payMethodRadios.forEach(radio => {
         if (promotionList.children.length) return;
 
         try {
-            const res = await fetch('/VNT-Restaurant/public/pos/promotions/available', {
+            const res = await fetch(`${appBaseUrl}/pos/promotions/available`, {
                 headers: { 'Accept': 'application/json' }
             });
 

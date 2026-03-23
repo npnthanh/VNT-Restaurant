@@ -8,19 +8,22 @@ function showSlide(i) {
   slides.forEach((s, idx) => s.style.transform = `translateX(-${index * 100}%)`);
 }
 
-next.addEventListener('click', () => {
-  index = (index + 1) % slides.length;
-  showSlide(index);
-});
-prev.addEventListener('click', () => {
-  index = (index - 1 + slides.length) % slides.length;
-  showSlide(index);
-});
+if (slides.length && next && prev) {
+  next.addEventListener('click', () => {
+    index = (index + 1) % slides.length;
+    showSlide(index);
+  });
 
-setInterval(() => {
-  index = (index + 1) % slides.length;
-  showSlide(index);
-}, 5000);
+  prev.addEventListener('click', () => {
+    index = (index - 1 + slides.length) % slides.length;
+    showSlide(index);
+  });
+
+  setInterval(() => {
+    index = (index + 1) % slides.length;
+    showSlide(index);
+  }, 5000);
+}
 
 
 

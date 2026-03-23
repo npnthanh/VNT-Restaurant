@@ -17,6 +17,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Stardos+Stencil:wght@700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     @stack('css')
+    <link rel="stylesheet" href="{{ asset('css/user/responsive.css') }}">
 
     <title>Tới Bến Quán</title>
 </head>

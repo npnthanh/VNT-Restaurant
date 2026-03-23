@@ -9,6 +9,11 @@ const filters = {
 
 document.documentElement.classList.add('js');
 
+const BASE_URL = document
+  .querySelector('meta[name="base-url"]')
+  ?.getAttribute('content') || window.location.origin;
+const POS_BASE_URL = `${BASE_URL}/pos`;
+
 var ingredientSelectControls = [];
 
 var closeIngredientSelectMenus = function () {
@@ -345,7 +350,7 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
     if (editId) {
-      fetch(`/VNT-Restaurant/public/pos/ingredient-category/update/${editId}`, {
+      fetch(`${POS_BASE_URL}/ingredient-category/update/${editId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -406,7 +411,7 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
     if (!await openConfirmDialog("Bạn có chắc muốn xóa?")) return;
-    fetch(`/VNT-Restaurant/public/pos/ingredient-category/delete/${editId}`, {
+    fetch(`${POS_BASE_URL}/ingredient-category/delete/${editId}`, {
       method: "DELETE",
       headers: { "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content }
     })
@@ -478,10 +483,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const formTitle = document.getElementById("formTitle");
     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
-    const STORE_URL = "/VNT-Restaurant/public/pos/ingredient/store";
-    const SHOW_URL = "/VNT-Restaurant/public/pos/ingredient/";
-    const UPDATE_URL = "/VNT-Restaurant/public/pos/ingredient/";
-    const DELETE_URL = "/VNT-Restaurant/public/pos/ingredient/";
+    const STORE_URL = `${POS_BASE_URL}/ingredient/store`;
+    const SHOW_URL = `${POS_BASE_URL}/ingredient/`;
+    const UPDATE_URL = `${POS_BASE_URL}/ingredient/`;
+    const DELETE_URL = `${POS_BASE_URL}/ingredient/`;
 
     // ====== OPEN FORM ADD ======
     if (btnOpenForm) btnOpenForm.addEventListener("click", () => {

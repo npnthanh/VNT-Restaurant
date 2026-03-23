@@ -1,317 +1,335 @@
-window.addEventListener('scroll', () => {
-  const footer = document.querySelector('footer');
+document.addEventListener('DOMContentLoaded', () => {
+  const footer = document.querySelector('footer, .footer');
   const scrollBtn = document.getElementById('scrollButton');
-  if (!footer || !scrollBtn) return;
+  const mobileNavToggle = document.getElementById('mobileNavToggle');
+  const mobileNavClose = document.getElementById('mobileNavClose');
+  const mobileNavDrawer = document.getElementById('mobileNavDrawer');
+  const mobileNavOverlay = document.getElementById('mobileNavOverlay');
+  const bookingOverlay = document.getElementById('bookingOverlay');
+  const closeBookingBtn = document.getElementById('closeBooking2');
+  const bookingSubmitBtn = document.querySelector('#bookingOverlay .submit-btn');
+  const bookingOpenButtons = document.querySelectorAll('[data-open-booking]');
 
-  const footerRect = footer.getBoundingClientRect();
-  const windowHeight = window.innerHeight;
+  const updateScrollButton = () => {
+    if (!footer || !scrollBtn) return;
+    const footerRect = footer.getBoundingClientRect();
+    const windowHeight = window.innerHeight;
 
-  if (footerRect.top < windowHeight - 100) {
-    scrollBtn.style.bottom = `${windowHeight - footerRect.top + 100}px`;
-  } else {
-    scrollBtn.style.bottom = '120px';
-  }
-});
-
-document.getElementById('scrollButton').addEventListener('click', () => {
-  const scrollStep = -window.scrollY / 10;
-  const scrollInterval = setInterval(() => {
-    if (window.scrollY !== 0) {
-      window.scrollBy(0, scrollStep);
+    if (footerRect.top < windowHeight - 100) {
+      scrollBtn.style.bottom = `${windowHeight - footerRect.top + 100}px`;
     } else {
-      clearInterval(scrollInterval);
+      scrollBtn.style.bottom = '120px';
     }
-  }, 16);
-});
+  };
 
+  if (scrollBtn) {
+    window.addEventListener('scroll', updateScrollButton);
+    updateScrollButton();
 
-const bookingButtons = document.querySelectorAll('.btn-booking');
-const bookingOverlayy = document.getElementById('bookingOverlay');
-const closeBookingBtn = document.getElementById('closeBooking2');
-
-bookingButtons.forEach(btn => {
-  btn.addEventListener('click', () => {
-    bookingOverlayy.classList.add('active');
-    bookingOverlayy.style.removeProperty('display');
-  });
-});
-
-closeBookingBtn.addEventListener('click', () => {
-  bookingOverlayy.classList.remove('active');
-  bookingOverlayy.style.removeProperty('pointer-events');
-  document.body.style.setProperty('pointer-events', 'auto', 'important');
-});
-
-bookingOverlayy.addEventListener('click', (e) => {
-  if (e.target === bookingOverlayy) {
-    bookingOverlayy.classList.remove('active');
-    bookingOverlayy.style.removeProperty('pointer-events');
-    document.body.style.setProperty('pointer-events', 'auto', 'important');
+    scrollBtn.addEventListener('click', () => {
+      const scrollStep = -window.scrollY / 10;
+      const scrollInterval = setInterval(() => {
+        if (window.scrollY !== 0) {
+          window.scrollBy(0, scrollStep);
+        } else {
+          clearInterval(scrollInterval);
+        }
+      }, 16);
+    });
   }
-});
 
+  const setMobileNavState = (isOpen) => {
+    if (!mobileNavDrawer || !mobileNavOverlay || !mobileNavToggle) return;
+    mobileNavDrawer.classList.toggle('is-open', isOpen);
+    mobileNavOverlay.classList.toggle('is-open', isOpen);
+    mobileNavDrawer.setAttribute('aria-hidden', String(!isOpen));
+    mobileNavOverlay.setAttribute('aria-hidden', String(!isOpen));
+    mobileNavToggle.setAttribute('aria-expanded', String(isOpen));
+    document.body.classList.toggle('mobile-nav-open', isOpen);
+  };
 
-document.querySelectorAll(".custom-dropdown").forEach(drop => {
-  const selected = drop.querySelector(".dropdown-selected");
-  const list = drop.querySelector(".dropdown-list");
-  const text = drop.querySelector(".selected-text");
-  const placeholder = drop.getAttribute("data-placeholder");
+  if (mobileNavToggle && mobileNavDrawer && mobileNavOverlay) {
+    mobileNavToggle.addEventListener('click', () => setMobileNavState(true));
+    mobileNavClose?.addEventListener('click', () => setMobileNavState(false));
+    mobileNavOverlay.addEventListener('click', () => setMobileNavState(false));
+    mobileNavDrawer.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => setMobileNavState(false));
+    });
+  }
 
+  const bookingDropdowns = bookingOverlay
+    ? bookingOverlay.querySelectorAll('.custom-dropdown')
+    : [];
 
-  selected.addEventListener("click", () => {
-    document.querySelectorAll(".custom-dropdown").forEach(d => {
-      if (d !== drop) d.classList.remove("open");
-      d.querySelector(".dropdown-list").style.display = "none";
+  const resetBookingForm = () => {
+    if (!bookingOverlay) return;
+    const textInputs = bookingOverlay.querySelectorAll('input[type="text"], textarea');
+    textInputs.forEach((input) => {
+      input.value = '';
     });
 
-    drop.classList.toggle("open");
-    list.style.display = drop.classList.contains("open") ? "block" : "none";
-  });
-
-
-  list.querySelectorAll("li").forEach(item => {
-    item.addEventListener("click", () => {
-      text.textContent = item.textContent;
-      drop.classList.remove("open");
-      list.style.display = "none";
+    const hiddenInputs = bookingOverlay.querySelectorAll('input[type="hidden"]');
+    hiddenInputs.forEach((input) => {
+      if (input.id !== 'bookingDateHidden') input.value = '';
     });
-  });
 
+    const guestInput = bookingOverlay.querySelector('.guest-input');
+    if (guestInput) guestInput.value = 1;
 
-  document.addEventListener("click", (e) => {
-    if (!drop.contains(e.target)) {
-      drop.classList.remove("open");
-      list.style.display = "none";
-    }
-  });
-});
-
-
-const bookingOverlay = document.getElementById("bookingOverlay");
-const openBooking = document.querySelector(".btn-booking");
-const closeBooking2 = document.getElementById("closeBooking2");
-
-openBooking.addEventListener("click", () => {
-  bookingOverlay.classList.add("active");
-  bookingOverlay.style.removeProperty('display');
-});
-closeBooking2.addEventListener("click", () => {
-  bookingOverlay.classList.remove("active");
-  bookingOverlay.style.removeProperty('pointer-events');
-  document.body.style.setProperty('pointer-events', 'auto', 'important');
-});
-
-bookingOverlay.addEventListener("click", (e) => {
-  if (e.target === bookingOverlay) {
-    bookingOverlay.classList.remove("active");
-    bookingOverlay.style.removeProperty('pointer-events');
-    document.body.style.setProperty('pointer-events', 'auto', 'important');
-  }
-});
-
-
-const minusBtn = document.querySelector(".guest .minus");
-const plusBtn = document.querySelector(".guest .plus");
-const guestInput = document.querySelector(".guest input");
-
-minusBtn.addEventListener("click", () => {
-  if (guestInput.value > 1) {
-    guestInput.value--;
-  }
-});
-
-plusBtn.addEventListener("click", () => {
-  guestInput.value++;
-});
-
-document.querySelectorAll('.custom-dropdown').forEach(dropdown => {
-  const selected = dropdown.querySelector('.dropdown-selected');
-  const textEl = dropdown.querySelector('.selected-text');
-  const hiddenInput = document.getElementById('promotion_id');
-  const items = dropdown.querySelectorAll('.dropdown-list li');
-
-  items.forEach(item => {
-    item.addEventListener('click', () => {
-      const value = item.getAttribute('value') || item.textContent.trim();
-
-      textEl.textContent = item.textContent.trim();
-      dropdown.dataset.value = value;
-
-      hiddenInput.value = value;
-
+    bookingDropdowns.forEach((dropdown) => {
+      const placeholder = dropdown.dataset.placeholder || 'Lựa chọn';
+      const selectedText = dropdown.querySelector('.selected-text');
+      const list = dropdown.querySelector('.dropdown-list');
+      if (selectedText) selectedText.textContent = placeholder;
+      list?.classList.remove('show');
       dropdown.classList.remove('open');
     });
+
+    const dateText = document.getElementById('dateText');
+    const bookingDateHidden = document.getElementById('bookingDateHidden');
+    if (dateText) dateText.textContent = '--/--';
+    if (bookingDateHidden) bookingDateHidden.value = '';
+  };
+
+  const openBookingOverlay = (prefill = {}) => {
+    if (!bookingOverlay) return;
+    resetBookingForm();
+    bookingOverlay.classList.add('active');
+    bookingOverlay.style.removeProperty('display');
+    document.body.classList.add('booking-open');
+    setMobileNavState(false);
+
+    if (prefill.locationId) {
+      const dropdown = bookingOverlay.querySelector('.custom-dropdown[data-placeholder="Lựa chọn cơ sở"]');
+      if (dropdown) {
+        const items = dropdown.querySelectorAll('.dropdown-list li');
+        const selectedText = dropdown.querySelector('.selected-text');
+        const hiddenInput = dropdown.querySelector('input[type="hidden"]');
+        items.forEach((item) => {
+          if (item.getAttribute('value') === String(prefill.locationId)) {
+            if (selectedText) selectedText.textContent = item.textContent.trim();
+            if (hiddenInput) hiddenInput.value = item.getAttribute('value') || '';
+            dropdown.dataset.value = item.getAttribute('value') || '';
+          }
+        });
+      }
+    }
+  };
+
+  const closeBookingOverlay = () => {
+    if (!bookingOverlay) return;
+    bookingOverlay.classList.remove('active');
+    bookingOverlay.style.removeProperty('display');
+    document.body.classList.remove('booking-open');
+  };
+
+  window.openUserBookingModal = openBookingOverlay;
+  window.closeUserBookingModal = closeBookingOverlay;
+
+  bookingOpenButtons.forEach((button) => {
+    button.addEventListener('click', () => openBookingOverlay());
   });
 
-  selected.addEventListener('click', () => {
-    dropdown.classList.toggle('open');
-  });
-});
+  if (closeBookingBtn && bookingOverlay) {
+    closeBookingBtn.addEventListener('click', closeBookingOverlay);
+    bookingOverlay.addEventListener('click', (event) => {
+      if (event.target === bookingOverlay) {
+        closeBookingOverlay();
+      }
+    });
+  }
 
-// click ra ngoài thì đóng
-document.addEventListener('click', e => {
-  document.querySelectorAll('.custom-dropdown').forEach(dd => {
-    if (!dd.contains(e.target)) {
-      dd.classList.remove('open');
+  bookingDropdowns.forEach((dropdown) => {
+    const selected = dropdown.querySelector('.dropdown-selected');
+    const list = dropdown.querySelector('.dropdown-list');
+    const selectedText = dropdown.querySelector('.selected-text');
+    const hiddenInput = dropdown.querySelector('input[type="hidden"]');
+
+    selected?.addEventListener('click', () => {
+      bookingDropdowns.forEach((item) => {
+        if (item !== dropdown) {
+          item.classList.remove('open');
+          item.querySelector('.dropdown-list')?.classList.remove('show');
+        }
+      });
+
+      dropdown.classList.toggle('open');
+      list?.classList.toggle('show');
+    });
+
+    list?.querySelectorAll('li').forEach((entry) => {
+      entry.addEventListener('click', () => {
+        const value = entry.getAttribute('value') || entry.textContent.trim();
+        if (selectedText) selectedText.textContent = entry.textContent.trim();
+        if (hiddenInput) hiddenInput.value = value;
+        dropdown.dataset.value = value;
+        dropdown.classList.remove('open');
+        list.classList.remove('show');
+      });
+    });
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!event.target.closest('#bookingOverlay .custom-dropdown')) {
+      bookingDropdowns.forEach((dropdown) => {
+        dropdown.classList.remove('open');
+        dropdown.querySelector('.dropdown-list')?.classList.remove('show');
+      });
     }
   });
-});
 
-document.querySelector('.submit-btn').addEventListener('click', async (e) => {
-    e.preventDefault();
+  const minusBtn = bookingOverlay?.querySelector('.guest .minus');
+  const plusBtn = bookingOverlay?.querySelector('.guest .plus');
+  const guestInput = bookingOverlay?.querySelector('.guest-input');
 
-    const customer_name = document.querySelector(
-        '.booking-section input[placeholder="Tên của bạn"]'
-    ).value.trim();
+  minusBtn?.addEventListener('click', () => {
+    if (!guestInput) return;
+    const nextValue = Math.max(1, Number(guestInput.value || 1) - 1);
+    guestInput.value = nextValue;
+  });
 
-    const phone = document.querySelector(
-        '.booking-section input[placeholder="Số điện thoại"]'
-    ).value.trim();
+  plusBtn?.addEventListener('click', () => {
+    if (!guestInput) return;
+    guestInput.value = Number(guestInput.value || 1) + 1;
+  });
 
-    const locationDropdown = document.querySelector(
-        '.custom-dropdown[data-placeholder="Lựa chọn cơ sở"]'
-    );
-    const location_id = locationDropdown?.dataset.value || '';
+  bookingSubmitBtn?.addEventListener('click', async (event) => {
+    event.preventDefault();
 
-    const guest_count = Number(
-        document.querySelector('.guest-input').value || 0
-    );
+    const customerName = bookingOverlay?.querySelector('input[placeholder="Tên của bạn"]')?.value.trim() || '';
+    const phone = bookingOverlay?.querySelector('input[placeholder="Số điện thoại"]')?.value.trim() || '';
+    const locationDropdown = bookingOverlay?.querySelector('.custom-dropdown[data-placeholder="Lựa chọn cơ sở"]');
+    const locationId = locationDropdown?.dataset.value || locationDropdown?.querySelector('input[type="hidden"]')?.value || '';
+    const guestCount = Number(guestInput?.value || 0);
+    const bookingDate = document.getElementById('bookingDateHidden')?.value || '';
+    const timeDropdown = bookingOverlay?.querySelector('.custom-dropdown[data-placeholder="Chọn giờ"]');
+    const bookingTime = timeDropdown?.dataset.value || '';
+    const promotionDropdown = bookingOverlay?.querySelector('.custom-dropdown[data-placeholder="Chọn ưu đãi"]');
+    const promotionId = promotionDropdown?.dataset.value || null;
+    const note = bookingOverlay?.querySelector('textarea')?.value.trim() || '';
 
-    const booking_date = document.getElementById('bookingDateHidden').value;
-
-    const timeDropdown = document.querySelector(
-        '.custom-dropdown[data-placeholder="Chọn giờ"]'
-    );
-    const booking_time = timeDropdown?.dataset.value || '';
-
-    const promotionDropdown = document.querySelector(
-        '.custom-dropdown[data-placeholder="Chọn ưu đãi"]'
-    );
-    const promotion_id = promotionDropdown?.dataset.value || null;
-
-    const note = document.querySelector('textarea').value.trim();
-
-    if (
-        !customer_name ||
-        !phone ||
-        !location_id ||
-        guest_count <= 0 ||
-        !booking_date ||
-        !booking_time
-    ) {
-        showToast('<i class="fas fa-exclamation-triangle"></i> Vui lòng nhập đầy đủ thông tin bắt buộc', 'warning');
-        return;
+    if (!customerName || !phone || !locationId || guestCount <= 0 || !bookingDate || !bookingTime) {
+      showToast('<i class="fas fa-exclamation-triangle"></i> Vui lòng nhập đầy đủ thông tin bắt buộc', 'warning');
+      return;
     }
 
-    const [day, month, year] = booking_date.split('/');
-    const booking_datetime = `${year}-${month}-${day} ${booking_time}:00`;
+    const [day, month, year] = bookingDate.split('/');
+    const bookingDatetime = `${year}-${month}-${day} ${bookingTime}:00`;
 
     const payload = {
-        customer_name,
-        phone,
-        location_id,
-        guest_count,
-        booking_time: booking_datetime,
-        promotion_id,
-        note,
-
-        items: window.currentCart || []
+      customer_name: customerName,
+      phone,
+      location_id: locationId,
+      guest_count: guestCount,
+      booking_time: bookingDatetime,
+      promotion_id: promotionId,
+      note,
+      items: window.currentCart || []
     };
 
     try {
-        const CSRF_TOKEN = document
-            .querySelector('meta[name="csrf-token"]')
-            .getAttribute('content');
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
-        const res = await fetch(`${APP_URL}/booking/store`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': CSRF_TOKEN,
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        });
+      const response = await fetch(`${APP_URL}/booking/store`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': csrfToken,
+          Accept: 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
 
-        const data = await res.json();
+      const data = await response.json();
 
-        if (!data.success) {
-            showToast('<i class="fas fa-times-circle"></i> ' + (data.message || 'Đặt bàn thất bại'), 'error');
-            return;
-        }
+      if (!data.success) {
+        showToast('<i class="fas fa-times-circle"></i> ' + (data.message || 'Đặt bàn thất bại'), 'error');
+        return;
+      }
 
-        showToast('<i class="fas fa-check-circle"></i> Đặt bàn thành công! Chúng tôi sẽ liên hệ sớm.', 'success');
-        document.getElementById('bookingOverlay').style.display = 'none';
-
-    } catch (err) {
-        console.error(err);
-        showToast('<i class="fas fa-times-circle"></i> Có lỗi xảy ra, vui lòng thử lại', 'error');
+      showToast('<i class="fas fa-check-circle"></i> Đặt bàn thành công! Chúng tôi sẽ liên hệ sớm.', 'success');
+      closeBookingOverlay();
+    } catch (error) {
+      console.error(error);
+      showToast('<i class="fas fa-times-circle"></i> Có lỗi xảy ra, vui lòng thử lại', 'error');
     }
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      if (mobileNavDrawer?.classList.contains('is-open')) {
+        setMobileNavState(false);
+      }
+      if (bookingOverlay?.classList.contains('active')) {
+        closeBookingOverlay();
+      }
+    }
+  });
 });
 
 (function () {
-    const overlay = document.getElementById('appConfirmOverlay');
-    if (!overlay) {
-        window.openConfirmDialog = () => {
-            console.warn('Confirm dialog not found.');
-            return Promise.resolve(false);
-        };
-        return;
+  const overlay = document.getElementById('appConfirmOverlay');
+  if (!overlay) {
+    window.openConfirmDialog = () => Promise.resolve(false);
+    return;
+  }
+
+  const dialog = document.getElementById('appConfirmDialog');
+  const titleEl = document.getElementById('appConfirmTitle');
+  const messageEl = document.getElementById('appConfirmMessage');
+  const confirmBtn = document.getElementById('appConfirmOk');
+  const cancelBtn = document.getElementById('appConfirmCancel');
+  const closeBtn = document.getElementById('appConfirmClose');
+  const iconEl = overlay.querySelector('.app-confirm-icon i');
+  let resolveConfirm = null;
+  let keyHandler = null;
+
+  const closeConfirm = (result) => {
+    overlay.classList.remove('active');
+    overlay.setAttribute('aria-hidden', 'true');
+
+    if (resolveConfirm) {
+      resolveConfirm(Boolean(result));
+      resolveConfirm = null;
     }
-    const dialog = document.getElementById('appConfirmDialog');
-    const titleEl = document.getElementById('appConfirmTitle');
-    const messageEl = document.getElementById('appConfirmMessage');
-    const confirmBtn = document.getElementById('appConfirmOk');
-    const cancelBtn = document.getElementById('appConfirmCancel');
-    const closeBtn = document.getElementById('appConfirmClose');
-    const iconEl = overlay.querySelector('.app-confirm-icon i');
-    let resolveConfirm = null;
-    let keyHandler = null;
 
-    const closeConfirm = (result) => {
-        overlay.classList.remove('active');
-        overlay.setAttribute('aria-hidden', 'true');
-        if (resolveConfirm) {
-            resolveConfirm(Boolean(result));
-            resolveConfirm = null;
-        }
-        if (keyHandler) {
-            document.removeEventListener('keydown', keyHandler);
-            keyHandler = null;
-        }
+    if (keyHandler) {
+      document.removeEventListener('keydown', keyHandler);
+      keyHandler = null;
+    }
+  };
+
+  window.openConfirmDialog = (message, options = {}) => {
+    if (titleEl) titleEl.textContent = options.title || 'Xác nhận';
+    if (messageEl) messageEl.textContent = message || '';
+    if (confirmBtn) confirmBtn.textContent = options.confirmText || 'Đồng ý';
+    if (cancelBtn) cancelBtn.textContent = options.cancelText || 'Hủy';
+    if (dialog) dialog.dataset.variant = options.variant || '';
+    if (iconEl) iconEl.className = `fas ${options.icon || 'fa-triangle-exclamation'}`;
+
+    overlay.classList.add('active');
+    overlay.setAttribute('aria-hidden', 'false');
+
+    if (confirmBtn && typeof confirmBtn.focus === 'function') {
+      confirmBtn.focus();
+    }
+
+    keyHandler = (event) => {
+      if (event.key === 'Escape') {
+        closeConfirm(false);
+      }
     };
+    document.addEventListener('keydown', keyHandler);
 
-    const openConfirmDialog = (message, options = {}) => {
-        const opts = options || {};
-        const msg = message || '';
-        if (titleEl) titleEl.textContent = opts.title || 'Xác nhận';
-        if (messageEl) messageEl.textContent = msg;
-        if (confirmBtn) confirmBtn.textContent = opts.confirmText || 'Đồng ý';
-        if (cancelBtn) cancelBtn.textContent = opts.cancelText || 'Hủy';
-        if (dialog) dialog.dataset.variant = opts.variant || '';
-        if (iconEl) iconEl.className = `fas ${opts.icon || 'fa-triangle-exclamation'}`;
-        overlay.classList.add('active');
-        overlay.setAttribute('aria-hidden', 'false');
-        if (confirmBtn && typeof confirmBtn.focus === 'function') {
-            confirmBtn.focus();
-        }
-        keyHandler = (event) => {
-            if (event.key === 'Escape') {
-                closeConfirm(false);
-            }
-        };
-        document.addEventListener('keydown', keyHandler);
-        return new Promise(resolve => {
-            resolveConfirm = resolve;
-        });
-    };
-
-    overlay.addEventListener('click', (event) => {
-        if (event.target === overlay) closeConfirm(false);
+    return new Promise((resolve) => {
+      resolveConfirm = resolve;
     });
-    if (confirmBtn) confirmBtn.addEventListener('click', () => closeConfirm(true));
-    if (cancelBtn) cancelBtn.addEventListener('click', () => closeConfirm(false));
-    if (closeBtn) closeBtn.addEventListener('click', () => closeConfirm(false));
+  };
 
-    window.openConfirmDialog = openConfirmDialog;
+  overlay.addEventListener('click', (event) => {
+    if (event.target === overlay) closeConfirm(false);
+  });
+  confirmBtn?.addEventListener('click', () => closeConfirm(true));
+  cancelBtn?.addEventListener('click', () => closeConfirm(false));
+  closeBtn?.addEventListener('click', () => closeConfirm(false));
 })();

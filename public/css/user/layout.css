@@ -10,7 +10,7 @@
 /* BODY START */
 body {
   background-color: #1B4E30;
-  background-image: url('/VNT-Restaurant/public/images/background/body-bg.jpg');
+  background-image: url('../../images/background/body-bg.jpg');
   background-size: 100% auto;
   background-position: left top;
   background-repeat: repeat-y;
@@ -34,7 +34,7 @@ header {
   justify-content: space-between;
   align-items: center;
   background-color: #1B4E30;
-  background-image: url('/VNT-Restaurant/public/images/background/header-bg.jpg');
+  background-image: url('../../images/background/header-bg.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -585,19 +585,19 @@ ol, ul {
 
 /* Đường dẫn chính xác */
 .social-link.fb {
-  background-image: url('/VNT-Restaurant/public/images/web_images/icn-fb.svg');
+  background-image: url('../../images/web_images/icn-fb.svg');
 }
 
 .social-link.tiktok {
-  background-image: url('/VNT-Restaurant/public/images/web_images/icn-tiktok.svg');
+  background-image: url('../../images/web_images/icn-tiktok.svg');
 }
 
 .social-link.ig {
-  background-image: url('/VNT-Restaurant/public/images/web_images/icn-ig.svg');
+  background-image: url('../../images/web_images/icn-ig.svg');
 }
 
 .social-link.yt {
-  background-image: url('/VNT-Restaurant/public/images/web_images/icn-yt.svg');
+  background-image: url('../../images/web_images/icn-yt.svg');
 }
 
 .credit {
