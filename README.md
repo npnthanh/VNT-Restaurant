@@ -16,6 +16,15 @@ The product combines two interfaces in one codebase:
 - A customer-facing website for menu browsing, branch discovery, contact, news, and table booking
 - A branch-aware POS/back-office interface for cashier, operations, inventory, staffing, permissions, and analytics
 
+## Live Demo
+
+- Customer website: https://restaurant.bambi.io.vn/
+- POS / admin interface: https://restaurant.bambi.io.vn/pos/kiot
+- Test account:
+  - `location_code`: `tbqdonghia`
+  - `phone`: `0123456789`
+  - `password`: `abc@123`
+
 ## What This Repo Demonstrates
 
 - End-to-end business workflow design for a restaurant/POS-like product
@@ -127,7 +136,13 @@ http://localhost
 
 ## Demo Login
 
-After importing the sample database, you can reset a demo staff password with Tinker and use the first staff account already present in the dump:
+For the deployed demo, use the public POS URL above with:
+
+- `location_code`: `tbqdonghia`
+- `phone`: `0123456789`
+- `password`: `abc@123`
+
+For a fresh local setup after importing the sample database, you can also reset a demo staff password with Tinker and use the first staff account already present in the dump:
 
 ```bash
 php artisan tinker
@@ -173,6 +188,6 @@ Migrations are included in the repo, but the SQL dump is the most complete repre
 ## What I Would Improve Next
 
 - Add real UI screenshots or a short demo video to the README
-- Deploy a public demo URL for faster recruiter review
+- Add a demo account reset/seed script for the public environment
 - Add feature tests for booking, cashier checkout, and stock updates
 - Add a production deployment guide for Apache/Nginx root-domain hosting
