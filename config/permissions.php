@@ -83,6 +83,13 @@ return [
         'delete_promotion' => 'Xóa khuyến mãi',
     ],
 
+    'Tin tức' => [
+        'view_news' => 'Xem tin tức',
+        'create_news' => 'Thêm tin tức',
+        'update_news' => 'Sửa tin tức',
+        'delete_news' => 'Xóa tin tức',
+    ],
+
     'Nhập hàng' => [
         'view_import' => 'Xem phiếu nhập',
         'create_import' => 'Thêm phiếu nhập',

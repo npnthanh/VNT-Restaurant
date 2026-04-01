@@ -1,11 +1,10 @@
 <?php
 
 namespace App\Providers;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Auth;
 
-// use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -20,14 +19,13 @@ class AuthServiceProvider extends ServiceProvider
 
     /**
      * Register any authentication / authorization services.
-     *
-     * @return void
      */
     public function boot(): void
     {
         Gate::before(function ($user, $ability) {
             return null;
         });
+
         $permissions = [
             'view_dashboard' => ['Admin', 'Quản Lý', 'Kế Toán', 'Bảo Vệ', 'Bếp Trưởng', 'Bếp Phó', 'Nhân Viên Bàn', 'Nhân viên Phục Vụ', 'Tạp Vụ', 'Chảo', 'Thớt', 'Chảo Non', 'Phụ Bếp'],
 
@@ -88,6 +86,11 @@ class AuthServiceProvider extends ServiceProvider
             'update_promotion' => ['Admin', 'Quản Lý'],
             'delete_promotion' => ['Admin', 'Quản Lý'],
 
+            'view_news' => ['Admin', 'Quản Lý', 'Kế Toán'],
+            'create_news' => ['Admin', 'Quản Lý'],
+            'update_news' => ['Admin', 'Quản Lý'],
+            'delete_news' => ['Admin', 'Quản Lý'],
+
             'view_import' => ['Admin', 'Quản Lý', 'Kế Toán', 'Bếp Trưởng', 'Bếp Phó'],
             'create_import' => ['Admin', 'Quản Lý', 'Kế Toán'],
             'delete_import' => ['Admin', 'Quản Lý'],
@@ -136,7 +139,8 @@ class AuthServiceProvider extends ServiceProvider
 
                 return in_array(
                     strtolower($user->role->name),
-                    array_map('strtolower', $roles)
+                    array_map('strtolower', $roles),
+                    true
                 );
             });
         }
@@ -197,6 +201,11 @@ class AuthServiceProvider extends ServiceProvider
         'create_promotion',
         'update_promotion',
         'delete_promotion',
+
+        'view_news',
+        'create_news',
+        'update_news',
+        'delete_news',
 
         'view_import',
         'create_import',

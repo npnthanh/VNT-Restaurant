@@ -4,104 +4,101 @@
     @push('css')
         <link rel="stylesheet" href="{{ asset('css/user/news.css') }}">
     @endpush
-    <!-- CONTENT START -->
-    <main class="menu-page">
-        <!-- Banner -->
+
+    @php
+        $formatDate = function ($date) {
+            return $date ? $date->format('d, \\T\\H\\Á\\N\\G n, Y') : 'Đang cập nhật';
+        };
+    @endphp
+
+    <section class="menu-page news-page">
         <section class="menu-banner">
             <div class="menu-banner-container">
                 <div class="menu-banner-text">
-                    <h1>ƯU ĐÃI</h1>
+                    <h1>TIN TỨC</h1>
                     <p>
-                        Nơi cập nhật nhanh nhất những sự kiện nóng hổi, chương trình khuyến mại,
-                        <br>
-                        khách hàng và thông tin thương hiệu.
+                        Cập nhật ưu đãi, sự kiện và những câu chuyện mới nhất từ Tới Bến.
                     </p>
                 </div>
             </div>
         </section>
 
-        <!-- Danh mục -->
         <div class="menu-scroll-wrapper">
             <div class="fade-zone left"></div>
             <div class="menu-scroll" id="menuScroll">
-                <a href="#featured" class="active">Ưu đãi mới</a>
-                <a href="#all-promotions">Tất cả ưu đãi</a>
+                <a href="#featured" class="active">Tin nổi bật</a>
+                <a href="#all-news">Tất cả tin tức</a>
             </div>
             <div class="fade-zone right"></div>
         </div>
 
         <div class="container">
-            @if($promotions->isNotEmpty())
-                @php
-                    $featuredPromotion = $promotions->first();
-                @endphp
-                <div class="news-banner" id="featured">
-                    <div class="news-banner-content">
-                        <img class="big-banner"
-                             src="{{ asset($featuredPromotion->images ?: 'images/news/news4.png') }}"
-                             alt="{{ $featuredPromotion->name }}" />
-                        <div class="banner-text">
-                            <h2>{{ $featuredPromotion->name }}</h2>
-                            <div class="banner-meta">
-                                @if(!empty($featuredPromotion->description))
-                                    <p>{{ $featuredPromotion->description }}</p>
-                                @endif
-                                <a class="banner-cta" href="#all-promotions">
-                                    <span class="icn">→</span>
-                                    <span class="txt">XEM NGAY</span>
-                                </a>
+            @if($featuredNews)
+                <section class="news-banner" id="featured">
+                    <a class="news-banner-link" href="{{ route('news.show', $featuredNews) }}">
+                        <div class="news-banner-content">
+                            <img class="big-banner"
+                                 src="{{ asset($featuredNews->image ?: 'images/news/news4.png') }}"
+                                 alt="{{ $featuredNews->title }}">
+                            <div class="banner-text">
+                                <span class="news-kicker">{{ $featuredNews->category }}</span>
+                                <h2>{{ $featuredNews->title }}</h2>
+                                <div class="banner-meta">
+                                    <span class="news-date">{{ $formatDate($featuredNews->published_at) }}</span>
+                                    @if(!empty($featuredNews->summary))
+                                        <p>{{ \Illuminate\Support\Str::limit($featuredNews->summary, 180) }}</p>
+                                    @endif
+                                    <span class="banner-cta">
+                                        <span class="icn">→</span>
+                                        <span class="txt">XEM NGAY</span>
+                                    </span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
+                    </a>
+                </section>
             @else
-                <div class="news-banner" id="featured">
-                    <div class="news-banner-content">
-                        <img class="big-banner" src="{{ asset('images/news/news4.png') }}" alt="Ưu đãi" />
-                        <div class="banner-text">
-                            <h2>Ưu đãi đang được cập nhật</h2>
-                            <div class="banner-meta">
-                                <p>Hiện chưa có chương trình khuyến mãi.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <section class="news-empty" id="featured">
+                    <span class="news-empty-kicker">TIN TỨC</span>
+                    <h2>Chưa có bài viết nào được xuất bản</h2>
+                    <p>Bạn có thể thêm dữ liệu vào bảng <code>news</code> để hiển thị tại đây.</p>
+                </section>
             @endif
 
-            @php
-                $otherPromotions = $promotions->skip(1);
-            @endphp
-            <div class="news-grid" id="all-promotions">
-                @forelse($otherPromotions as $promotion)
-                    <div class="news-item" id="promotion-{{ $promotion->id }}">
-                        <a href="#promotion-{{ $promotion->id }}">
+            <section class="news-grid" id="all-news">
+                @forelse($otherNews as $item)
+                    <article class="news-item">
+                        <a class="news-item-link" href="{{ route('news.show', $item) }}">
                             <img class="news-img"
-                                 src="{{ asset($promotion->images ?: 'images/news/news4.png') }}"
-                                 alt="{{ $promotion->name }}">
+                                 src="{{ asset($item->image ?: 'images/news/news4.png') }}"
+                                 alt="{{ $item->title }}">
                             <div class="news-content">
-                                <h3>{{ $promotion->name }}</h3>
-                                @if(!empty($promotion->description))
-                                    <p>{{ \Illuminate\Support\Str::limit($promotion->description, 120) }}</p>
+                                <span class="news-card-category">{{ $item->category }}</span>
+                                <h3>{{ $item->title }}</h3>
+                                <span class="news-card-date">{{ $formatDate($item->published_at) }}</span>
+                                @if(!empty($item->summary))
+                                    <p>{{ \Illuminate\Support\Str::limit($item->summary, 140) }}</p>
                                 @endif
-                                <a class="news-cta" href="#promotion-{{ $promotion->id }}">
+                                <span class="news-cta">
                                     <span class="icn">→</span>
                                     <span class="txt">XEM NGAY</span>
-                                </a>
+                                </span>
                             </div>
                         </a>
-                    </div>
+                    </article>
                 @empty
-                    <div class="news-item">
-                        <div class="news-content">
-                            <h3>{{ $promotions->isEmpty() ? 'Chưa có ưu đãi' : 'Chưa có ưu đãi khác' }}</h3>
-                            <p>Vui lòng quay lại sau để cập nhật chương trình mới.</p>
-                        </div>
-                    </div>
+                    @if(!$featuredNews)
+                        <article class="news-item news-item-empty">
+                            <div class="news-content">
+                                <h3>Danh sách bài viết đang trống</h3>
+                                <p>Triển khai migration rồi thêm bản ghi published vào bảng <code>news</code> để trang này hoạt động.</p>
+                            </div>
+                        </article>
+                    @endif
                 @endforelse
-            </div>
+            </section>
         </div>
-    </main>
-    <!-- CONTENT START -->
+    </section>
 @endsection
 
 @push('js')

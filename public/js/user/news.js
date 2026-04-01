@@ -1,18 +1,16 @@
-const scrollContainer = document.getElementById('menuScroll');
-  const btnLeft = document.getElementById('scrollLeft');
-  const btnRight = document.getElementById('scrollRight');
+document.addEventListener('DOMContentLoaded', () => {
+  const scrollContainer = document.getElementById('menuScroll');
+
+  if (!scrollContainer) {
+    return;
+  }
 
   const checkScroll = () => {
-    const maxScrollLeft = scrollContainer.scrollWidth - scrollContainer.clientWidth;
-
-    btnLeft.classList.toggle('hidden', scrollContainer.scrollLeft <= 0);
-    btnRight.classList.toggle('hidden', scrollContainer.scrollLeft >= maxScrollLeft - 1);
-
     const leftBoundary = scrollContainer.scrollLeft + 40;
     const rightBoundary = scrollContainer.scrollLeft + scrollContainer.clientWidth - 40;
     const links = scrollContainer.querySelectorAll('a');
 
-    links.forEach(link => {
+    links.forEach((link) => {
       const rect = link.getBoundingClientRect();
       const parentRect = scrollContainer.getBoundingClientRect();
       const linkLeft = rect.left - parentRect.left + scrollContainer.scrollLeft;
@@ -26,4 +24,7 @@ const scrollContainer = document.getElementById('menuScroll');
     });
   };
 
-  
+  checkScroll();
+  scrollContainer.addEventListener('scroll', checkScroll, { passive: true });
+  window.addEventListener('resize', checkScroll);
+});

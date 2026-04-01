@@ -1,0 +1,223 @@
+.news-detail-page {
+  --detail-green: #10351f;
+  --detail-green-soft: #1f5b38;
+  --detail-gold: #ffa827;
+  --detail-bg: #f7f7f2;
+  --detail-text: #182019;
+  --detail-muted: #6a736b;
+  background:
+    radial-gradient(circle at top right, rgba(255, 168, 39, 0.14), transparent 22%),
+    linear-gradient(180deg, #ffffff 0%, var(--detail-bg) 100%);
+  padding: 42px 0 72px;
+}
+
+.news-detail-container {
+  width: min(1240px, calc(100% - 40px));
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 2.1fr) 360px;
+  gap: 34px;
+  align-items: start;
+}
+
+.news-article {
+  min-width: 0;
+}
+
+.news-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  color: #8a918a;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.news-breadcrumb a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.news-detail-category {
+  display: inline-flex;
+  width: fit-content;
+  margin-bottom: 14px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(255, 168, 39, 0.14);
+  color: #8d5b04;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.news-detail-title {
+  margin: 0 0 12px;
+  color: var(--detail-text);
+  font-size: clamp(32px, 3vw, 54px);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+}
+
+.news-detail-date {
+  display: block;
+  margin-bottom: 22px;
+  color: var(--detail-green-soft);
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.news-detail-image {
+  display: block;
+  width: 100%;
+  border-radius: 18px;
+  margin-bottom: 26px;
+  box-shadow: 0 24px 50px rgba(16, 30, 21, 0.12);
+}
+
+.news-detail-summary {
+  margin: 0 0 26px;
+  padding: 22px 24px;
+  border-left: 4px solid var(--detail-gold);
+  border-radius: 0 14px 14px 0;
+  background: #fff8ec;
+  color: #334137;
+  font-size: 24px;
+  line-height: 1.6;
+}
+
+.news-body {
+  padding: 4px 2px 0;
+}
+
+.news-body-text,
+.news-body-empty {
+  color: #273129;
+  font-size: 18px;
+  line-height: 2;
+  white-space: normal;
+}
+
+.news-body-empty {
+  margin: 0;
+  color: var(--detail-muted);
+}
+
+.news-sidebar {
+  position: sticky;
+  top: 110px;
+  display: grid;
+  gap: 22px;
+}
+
+.news-sidebar-block,
+.news-sidebar-posters {
+  display: grid;
+  gap: 18px;
+}
+
+.news-sidebar-block h2 {
+  margin: 0;
+  color: var(--detail-text);
+  font-size: 18px;
+}
+
+.news-sidebar-list {
+  display: grid;
+  gap: 16px;
+}
+
+.news-sidebar-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 138px;
+  gap: 14px;
+  align-items: center;
+  padding-bottom: 16px;
+  border-bottom: 1px dashed rgba(24, 32, 25, 0.14);
+  color: inherit;
+  text-decoration: none;
+}
+
+.news-sidebar-item:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.news-sidebar-copy h3 {
+  margin: 6px 0 0;
+  color: #304034;
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.news-sidebar-label {
+  color: var(--detail-muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.news-sidebar-item img,
+.news-sidebar-poster img {
+  display: block;
+  width: 100%;
+  border-radius: 14px;
+  object-fit: cover;
+}
+
+.news-sidebar-item img {
+  aspect-ratio: 16 / 9;
+}
+
+.news-sidebar-poster {
+  display: block;
+  text-decoration: none;
+}
+
+.news-sidebar-poster img {
+  box-shadow: 0 20px 40px rgba(16, 30, 21, 0.12);
+}
+
+@media (max-width: 1100px) {
+  .news-detail-container {
+    grid-template-columns: 1fr;
+  }
+
+  .news-sidebar {
+    position: static;
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .news-detail-page {
+    padding: 24px 0 54px;
+  }
+
+  .news-detail-container {
+    width: min(100%, calc(100% - 24px));
+    gap: 24px;
+  }
+
+  .news-detail-summary {
+    padding: 18px;
+    font-size: 20px;
+  }
+
+  .news-body-text,
+  .news-body-empty {
+    font-size: 17px;
+    line-height: 1.9;
+  }
+
+  .news-sidebar-item {
+    grid-template-columns: 1fr;
+  }
+}

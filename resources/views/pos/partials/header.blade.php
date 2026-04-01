@@ -47,6 +47,9 @@
                 @can('view_promotion')
                     <a href="{{ url('/pos/promotion') }}">Quản lý khuyến mãi</a>
                 @endcan
+                @can('view_news')
+                    <a href="{{ url('/pos/news') }}">Quản lý tin tức</a>
+                @endcan
             </div>
         </div>
         <div class="user-menu">

@@ -243,12 +243,16 @@ h2 {
   user-select: none;
   margin-bottom: 12px;
   border-radius: 6px;
-  overflow:visible;
+  overflow: visible;
 }
 
-.custom-dropdown.open .dropdown-selected{
-  border-color:#1B4E30;
-  box-shadow:0 4px 18px rgba(27,78,48,0.08);
+.custom-dropdown.open {
+  z-index: 60;
+}
+
+.custom-dropdown.open .dropdown-selected {
+  border-color: #1B4E30;
+  box-shadow: 0 4px 18px rgba(27, 78, 48, 0.08);
 }
 
 .dropdown-selected {
@@ -278,6 +282,7 @@ h2 {
 
 .dropdown-list {
   position: absolute;
+  top: 100%;
   left: 0;
   right: 0;
   background: #fff;
@@ -288,6 +293,11 @@ h2 {
   max-height: 190px;
   display: none;
   z-index: 50;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+}
+
+.dropdown-list.show {
+  display: block;
 }
 
 .dropdown-list li {

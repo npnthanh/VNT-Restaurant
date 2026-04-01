@@ -38,6 +38,7 @@ use App\Http\Controllers\WorkShiftController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\PayrollController;
+use App\Http\Controllers\NewsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -51,6 +52,7 @@ Route::get('/menu/filter/{categoryId}', [MenuController::class, 'filter'])
 Route::get('/location', [UserController::class, 'location'])->name('location');
 
 Route::get('/news', [UserController::class, 'news'])->name('news');
+Route::get('/news/{news:slug}', [UserController::class, 'newsShow'])->name('news.show');
 
 Route::get('/contact', [UserController::class, 'contact'])->name('contact');
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
@@ -324,5 +326,11 @@ Route::prefix('pos')->middleware('auth:staff')->group(function () {
     Route::post('/promotion-type', [PromotionTypeController::class, 'store'])->name('promotion_type.store')->middleware('can:view_promotion');
     Route::put('/promotion-type/{id}', [PromotionTypeController::class, 'update'])->name('promotion_type.update')->middleware('can:view_promotion');
     Route::delete('/promotion-type/{id}', [PromotionTypeController::class, 'destroy'])->name('promotion_type.destroy')->middleware('can:view_promotion');
+
+    Route::get('/news', [NewsController::class, 'index'])->name('pos.news')->middleware('can:view_news');
+    Route::get('/news/{id}', [NewsController::class, 'show'])->name('news.admin.show')->middleware('can:view_news');
+    Route::post('/news', [NewsController::class, 'store'])->name('news.admin.store')->middleware('can:create_news');
+    Route::put('/news/{id}', [NewsController::class, 'update'])->name('news.admin.update')->middleware('can:update_news');
+    Route::delete('/news/{id}', [NewsController::class, 'destroy'])->name('news.admin.delete')->middleware('can:delete_news');
 
 });

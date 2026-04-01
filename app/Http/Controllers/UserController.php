@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\News;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -48,9 +49,41 @@ class UserController extends Controller
 
     public function news()      
     { 
-        $promotions = \App\Models\Promotion::orderBy('start_date', 'desc')->get();
+        $newsItems = News::published()
+            ->orderByDesc('is_featured')
+            ->orderByDesc('published_at')
+            ->orderByDesc('id')
+            ->get();
 
-        return view('user.news', compact('promotions')); 
+        $featuredNews = $newsItems->firstWhere('is_featured', true) ?? $newsItems->first();
+        $otherNews = $newsItems
+            ->filter(fn (News $item) => !$featuredNews || $item->id !== $featuredNews->id)
+            ->values();
+
+        return view('user.news', compact('newsItems', 'featuredNews', 'otherNews')); 
+    }
+
+    public function newsShow(News $news)
+    {
+        if ($news->status !== 'published' || ($news->published_at && $news->published_at->isFuture())) {
+            abort(404);
+        }
+
+        $sidebarQuery = News::published()
+            ->where('id', '!=', $news->id)
+            ->orderByDesc('published_at')
+            ->orderByDesc('id');
+
+        $latestNews = (clone $sidebarQuery)
+            ->limit(3)
+            ->get();
+
+        $sidebarBanners = (clone $sidebarQuery)
+            ->skip(3)
+            ->take(2)
+            ->get();
+
+        return view('user.news-detail', compact('news', 'latestNews', 'sidebarBanners'));
     }
 
     public function contact()   
