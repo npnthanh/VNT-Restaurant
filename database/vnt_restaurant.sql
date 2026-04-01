@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th2 24, 2026 lúc 08:22 AM
+-- Thời gian đã tạo: Th4 01, 2026 lúc 10:10 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -213,7 +213,8 @@ INSERT INTO `booking` (`id`, `code`, `location_id`, `customer_id`, `customer_nam
 (23, 'DB000022', 1, 10, 'A Thành', '0961581328', '2026-02-27 00:00:00', 1, 'assigned', NULL, 13, NULL, NULL, 1, '2026-02-24 07:11:01'),
 (24, 'DB000023', 1, 10, 'A Thành', '0961581328', '2026-03-01 00:00:00', 1, 'waiting', NULL, NULL, NULL, NULL, 1, '2026-02-24 07:17:13'),
 (25, 'DB000024', 1, 10, 'A Thành', '0961581328', '2026-03-07 00:00:00', 1, 'assigned', NULL, 12, NULL, NULL, 1, '2026-02-24 07:17:58'),
-(26, 'DB000025', 1, 10, 'A Thành', '0961581328', '2026-02-25 00:00:00', 1, 'waiting', NULL, NULL, NULL, NULL, 1, '2026-02-24 07:20:37');
+(26, 'DB000025', 1, 10, 'A Thành', '0961581328', '2026-02-25 00:00:00', 1, 'waiting', NULL, NULL, NULL, NULL, 1, '2026-02-24 07:20:37'),
+(27, 'DB000026', 1, 10, 'A Thành', '0961581328', '2026-03-01 13:30:00', 1, 'waiting', NULL, NULL, NULL, NULL, 1, '2026-03-01 06:17:05');
 
 --
 -- Bẫy `booking`
@@ -610,13 +611,13 @@ CREATE TABLE `id_counters` (
 --
 
 INSERT INTO `id_counters` (`table_name`, `last_id`) VALUES
-('booking', 25),
+('booking', 26),
 ('contact', 3),
 ('customer', 18),
 ('export', 6),
 ('import', 25),
 ('ingredient', 21),
-('invoice', 57),
+('invoice', 59),
 ('product', 68),
 ('promotion', 2),
 ('users', 42);
@@ -1211,6 +1212,47 @@ INSERT INTO `location` (`id`, `region_id`, `code`, `thumbnail`, `status`, `name`
 -- --------------------------------------------------------
 
 --
+-- Cấu trúc bảng cho bảng `migrations`
+--
+
+CREATE TABLE `migrations` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `migration` varchar(255) NOT NULL,
+  `batch` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `news`
+--
+
+CREATE TABLE `news` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `slug` varchar(255) NOT NULL,
+  `category` varchar(255) NOT NULL DEFAULT 'Ưu đãi',
+  `summary` text DEFAULT NULL,
+  `content` longtext DEFAULT NULL,
+  `image` varchar(255) DEFAULT NULL,
+  `is_featured` tinyint(1) NOT NULL DEFAULT 0,
+  `status` varchar(20) NOT NULL DEFAULT 'draft',
+  `published_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `news`
+--
+
+INSERT INTO `news` (`id`, `title`, `slug`, `category`, `summary`, `content`, `image`, `is_featured`, `status`, `published_at`, `created_at`, `updated_at`) VALUES
+(1, 'Tặng lẩu ăn nướng - sướng gấp 4 lần', 'tang-lau-an-nuong-suong-gap-4-lan', 'Ưu đãi', 'Ưu đãi nổi bật dành cho khách đặt bàn trước.', 'Trưa nay ăn gì cho TIỆN - NGON – SƯỚNG – mà lại HỜI?\r\n\r\nĐến ngay Nướng Tự Do là kèo trưa không cần suy nghĩ.\r\n\r\n👉 Ưu đãi hấp dẫn: TẶNG NGAY 1 NỒI LẨU THÁI cho bàn từ 4 khách vào buổi trưa (Áp dụng khách đặt bàn trước). Và đặc biệt sẽ được trải nghiệm \"BỘ TỨ SIÊU SƯỚNG\" độc quyền:\r\n\r\n🥘 SƯỚNG BỤNG: Lẩu thái chua cay giải ngấy- siêu ngon\r\n\r\n💸 SƯỚNG VÍ : Giá đã hời nay tặng lẩu - hời hơn\r\n\r\n💨 SƯỚNG NGƯỜI: Nạp đầy năng lượng, hiệu quả gấp đôi\r\n\r\n❄️ SƯỚNG ĐẦU: Điều hoà, hút khói âm - bất chấp nắng nóng\r\n\r\n\r\n⏰ Áp dụng: 10h – 14h mỗi ngày.\r\n\r\n📍 Toạ độ: 02 Lê Đức Thọ – Cầu Giấy\r\n\r\n👉 Trưa nay chẳng cần nghĩ ngợi, chỉ cần nhấc máy đặt bàn là có ngay bữa trưa \"đủ đầy\" tại Nướng Tự Do. Đặt bàn ngay: *1986!!!\r\n\r\n-----------\r\n\r\nNướng Tự Do - Nướng Than Hoa & Lẩu Thái Tomyum\r\n\r\nĐịa chỉ: 02 Lê Đức Thọ, Cầu Giấy, Hà Nội\r\n\r\nHotline: *1986 nhánh 2', 'images/news/news4.png', 1, 'published', '2026-04-01 07:11:25', '2026-04-01 07:11:25', '2026-04-01 07:11:25'),
+(2, 'SINH NHẬT RỘN RÀNG - GIẢM NGAY 10%', 'sinh-nhat-ron-rang-giam-ngay-10', 'Ưu đãi', 'Sinh nhật này đi đâu cho VUI – NGON – TIỆN – mà vẫn HỜI?\r\nCâu trả lời quá đơn giản: đến ngay quán là có ưu đãi liền tay!', 'Ưu đãi đặc biệt: GIẢM NGAY 10% tổng hóa đơn cho khách hàng có sinh nhật (áp dụng khi đặt bàn trước).\r\nKhông chỉ giảm giá, bạn còn được tận hưởng trọn vẹn combo “SINH NHẬT SIÊU ĐÃ”:\r\n\r\n🎂 ĐÃ TIỆC: Không gian ấm cúng – phù hợp tụ tập bạn bè, gia đình\r\n\r\n🥩 ĐÃ VỊ: Thực đơn hấp dẫn, món nào cũng đậm đà khó cưỡng\r\n\r\n💸 ĐÃ VÍ: Giảm 10% – ăn càng đông, hời càng lớn\r\n\r\n🎉 ĐÃ VUI: Check-in, chụp hình, lưu lại khoảnh khắc đáng nhớ\r\n\r\n⏰ Áp dụng: Cả ngày – chỉ cần đặt bàn trước\r\n📍 Địa điểm: (Điền địa chỉ quán của bạn)\r\n\r\n👉 Sinh nhật là phải vui – mà vui thì phải đi ăn ngon!\r\nNhanh tay đặt bàn để không bỏ lỡ ưu đãi cực hời này nhé!\r\n\r\nTới Bến Quán\r\nĐịa chỉ: U04-L18, KĐT Đô Nghĩa\r\nHotline: 0961581328', 'images/news/20260401150839_UlymjIFC.png', 1, 'published', '2026-04-01 08:04:00', '2026-04-01 08:08:39', '2026-04-01 08:08:49');
+
+-- --------------------------------------------------------
+
+--
 -- Cấu trúc bảng cho bảng `payroll`
 --
 
@@ -1724,7 +1766,8 @@ INSERT INTO `work_schedules` (`id`, `staff_id`, `shift_id`, `work_date`, `note`,
 (4, 32, 2, '2026-01-05', NULL, '2026-01-14 08:26:51', '2026-01-14 08:26:51'),
 (5, 32, 2, '2026-01-14', NULL, '2026-01-14 08:28:57', '2026-01-14 08:28:57'),
 (6, 32, 2, '2025-12-28', NULL, '2026-01-14 08:32:34', '2026-01-14 08:32:34'),
-(7, 21, 2, '2026-01-15', NULL, '2026-01-15 09:14:58', '2026-01-15 09:14:58');
+(7, 21, 2, '2026-01-15', NULL, '2026-01-15 09:14:58', '2026-01-15 09:14:58'),
+(8, 13, 1, '2026-03-25', NULL, '2026-03-23 04:34:51', '2026-03-23 04:34:51');
 
 -- --------------------------------------------------------
 
@@ -1926,6 +1969,21 @@ ALTER TABLE `location`
   ADD KEY `fk_location_region` (`region_id`);
 
 --
+-- Chỉ mục cho bảng `migrations`
+--
+ALTER TABLE `migrations`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `news`
+--
+ALTER TABLE `news`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `news_slug_unique` (`slug`),
+  ADD KEY `news_published_at_index` (`published_at`),
+  ADD KEY `news_status_published_at_index` (`status`,`published_at`);
+
+--
 -- Chỉ mục cho bảng `payroll`
 --
 ALTER TABLE `payroll`
@@ -2030,7 +2088,7 @@ ALTER TABLE `attendance`
 -- AUTO_INCREMENT cho bảng `booking`
 --
 ALTER TABLE `booking`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT cho bảng `booking_item`
@@ -2120,7 +2178,7 @@ ALTER TABLE `inventory_log`
 -- AUTO_INCREMENT cho bảng `invoice`
 --
 ALTER TABLE `invoice`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=103;
 
 --
 -- AUTO_INCREMENT cho bảng `invoice_detail`
@@ -2132,6 +2190,18 @@ ALTER TABLE `invoice_detail`
 -- AUTO_INCREMENT cho bảng `location`
 --
 ALTER TABLE `location`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT cho bảng `migrations`
+--
+ALTER TABLE `migrations`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT cho bảng `news`
+--
+ALTER TABLE `news`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
@@ -2192,7 +2262,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT cho bảng `work_schedules`
 --
 ALTER TABLE `work_schedules`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT cho bảng `work_shifts`
