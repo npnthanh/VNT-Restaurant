@@ -219,82 +219,283 @@
             </div>
             <form id="locationForm">
                 <input type="hidden" id="location_id">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Mã địa điểm</label>
-                        <input class="write" type="text" id="location_code">
-                    </div>
-                    <div class="form-group">
-                        <label>Tên địa điểm</label>
-                        <input class="write" type="text" id="location_name">
-                    </div>
-                    <div class="form-group">
-                        <label>Khu vực</label>
-                        <div class="staff-select" data-location-select>
-                            <button type="button" class="staff-select-trigger" id="locationRegionDisplay" aria-expanded="false" aria-controls="locationRegionMenu">
-                                <span class="staff-select-value is-placeholder" id="locationRegionText"></span>
-                                <i class="fas fa-chevron-down"></i>
-                            </button>
-                            <div class="staff-select-menu" id="locationRegionMenu" aria-hidden="true"></div>
-                            <select class="write" id="location_region">
-                            <option value="">-- Chọn khu vực --</option>
-                            @foreach($regions as $region)
-                                <option value="{{ $region->id }}">{{ $region->name }}</option>
-                            @endforeach
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Sức chứa</label>
-                        <input class="write" type="number" id="location_capacity" min="0">
-                    </div>
-                    <div class="form-group">
-                        <label>Diện tích (m²)</label>
-                        <input class="write" type="number" step="0.01" id="location_area" min="0">
-                    </div>
-                    <div class="form-group">
-                        <label>Số tầng</label>
-                        <input class="write" type="number" id="location_floors" min="0">
-                    </div>
-                    <div class="form-group time-input-group">
-                        <label>Giờ phục vụ</label>
-                        <div class="time-inputs">
-                            <input class="write" type="time" id="location_time_start">
-                            <span class="time-separator">→</span>
-                            <input class="write" type="time" id="location_time_end">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Trạng thái</label>
-                        <div class="staff-select" data-location-select>
-                            <button type="button" class="staff-select-trigger" id="locationStatusDisplay" aria-expanded="false" aria-controls="locationStatusMenu">
-                                <span class="staff-select-value" id="locationStatusText"></span>
-                                <i class="fas fa-chevron-down"></i>
-                            </button>
-                            <div class="staff-select-menu" id="locationStatusMenu" aria-hidden="true"></div>
-                            <select class="write" id="location_status">
-                            <option value="active">Đang hoạt động</option>
-                            <option value="inactive">Ngừng hoạt động</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Link b&#7843;n &#273;&#7891;</label>
-                        <input class="write" type="text" id="location_map_url" placeholder="https://www.google.com/maps?q=...">
-                    </div>
-                    <div class="form-group full-width">
-                        <label>Ảnh đại diện</label>
-                        <div class="image-upload-wrap">
-                            <div id="locationImageBox" class="location-image-box">
-                                <img id="locationPreviewImage" src="" alt="" style="display:none;">
-                                <span id="locationAddImageText">Chưa có ảnh</span>
-                                <button id="locationRemoveImageBtn" type="button" class="remove-image-btn" style="display:none;">✕</button>
+                <div class="location-form-shell">
+                    <section class="location-form-section">
+                        <div class="location-section-head">
+                            <div>
+                                <h4>Thông tin cơ sở</h4>
+                                <p>Cột trái dành cho ảnh đại diện, hai cột bên phải giữ phần thông tin cơ bản của cơ sở.</p>
                             </div>
-                            <button type="button" id="locationChooseImage" class="image-choice-btn">Chọn ảnh</button>
-                            <input type="file" id="locationImageInput" accept="image/*" hidden>
-                            <input type="hidden" id="location_thumbnail">
                         </div>
-                    </div>
+
+                        <div class="location-basic-grid">
+                            <div class="location-media-column">
+                                <div class="location-media-card">
+                                    <label>Ảnh đại diện</label>
+                                    <div class="image-upload-wrap is-vertical">
+                                        <div id="locationImageBox" class="location-image-box">
+                                            <img id="locationPreviewImage" src="" alt="" style="display:none;">
+                                            <span id="locationAddImageText">Chưa có ảnh</span>
+                                            <button id="locationRemoveImageBtn" type="button" class="remove-image-btn" style="display:none;">✕</button>
+                                        </div>
+                                        <div class="image-upload-actions">
+                                            <button type="button" id="locationChooseImage" class="image-choice-btn">Chọn ảnh</button>
+                                        </div>
+                                        <input type="file" id="locationImageInput" accept="image/*" hidden>
+                                        <input type="hidden" id="location_thumbnail">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="location-fields-column">
+                                <div class="form-group">
+                                    <label>Mã địa điểm</label>
+                                    <input class="write" type="text" id="location_code">
+                                </div>
+                                <div class="form-group">
+                                    <label>Khu vực</label>
+                                    <div class="staff-select" data-location-select>
+                                        <button type="button" class="staff-select-trigger" id="locationRegionDisplay" aria-expanded="false" aria-controls="locationRegionMenu">
+                                            <span class="staff-select-value is-placeholder" id="locationRegionText"></span>
+                                            <i class="fas fa-chevron-down"></i>
+                                        </button>
+                                        <div class="staff-select-menu" id="locationRegionMenu" aria-hidden="true"></div>
+                                        <select class="write" id="location_region">
+                                        <option value="">-- Chọn khu vực --</option>
+                                        @foreach($regions as $region)
+                                            <option value="{{ $region->id }}">{{ $region->name }}</option>
+                                        @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Diện tích (m²)</label>
+                                    <input class="write" type="number" step="0.01" id="location_area" min="0">
+                                </div>
+                                <div class="form-group time-input-group">
+                                    <label>Giờ phục vụ</label>
+                                    <div class="time-inputs">
+                                        <input class="write" type="time" id="location_time_start">
+                                        <span class="time-separator">→</span>
+                                        <input class="write" type="time" id="location_time_end">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Link bản đồ</label>
+                                    <input class="write" type="text" id="location_map_url" placeholder="https://www.google.com/maps?q=...">
+                                </div>
+                            </div>
+
+                            <div class="location-fields-column">
+                                <div class="form-group">
+                                    <label>Tên địa điểm</label>
+                                    <input class="write" type="text" id="location_name">
+                                </div>
+                                <div class="form-group">
+                                    <label>Sức chứa</label>
+                                    <input class="write" type="number" id="location_capacity" min="0">
+                                </div>
+                                <div class="form-group">
+                                    <label>Số tầng</label>
+                                    <input class="write" type="number" id="location_floors" min="0">
+                                </div>
+                                <div class="form-group">
+                                    <label>Trạng thái</label>
+                                    <div class="staff-select" data-location-select>
+                                        <button type="button" class="staff-select-trigger" id="locationStatusDisplay" aria-expanded="false" aria-controls="locationStatusMenu">
+                                            <span class="staff-select-value" id="locationStatusText"></span>
+                                            <i class="fas fa-chevron-down"></i>
+                                        </button>
+                                        <div class="staff-select-menu" id="locationStatusMenu" aria-hidden="true"></div>
+                                        <select class="write" id="location_status">
+                                        <option value="active">Đang hoạt động</option>
+                                        <option value="inactive">Ngừng hoạt động</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="location-form-section">
+                        <div class="location-section-head">
+                            <div>
+                                <h4>Chi tiết trang cơ sở</h4>
+                                <p>Thông tin bên dưới sẽ dùng để render trang chi tiết cơ sở ở phía user.</p>
+                            </div>
+                        </div>
+
+                        <div class="detail-editor-grid">
+                            <div class="form-group full-span">
+                                <label>Tóm tắt ngắn</label>
+                                <textarea class="write textarea-field" id="detail_summary" rows="3" placeholder="Đoạn mô tả ngắn ở đầu trang"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Tiêu đề giới thiệu</label>
+                                <input class="write" type="text" id="detail_intro_title">
+                            </div>
+                            <div class="form-group">
+                                <label>Tiêu đề cuối trang</label>
+                                <input class="write" type="text" id="detail_closing_title">
+                            </div>
+                            <div class="form-group full-span">
+                                <label>Nội dung giới thiệu</label>
+                                <textarea class="write textarea-field" id="detail_intro_content" rows="5"></textarea>
+                            </div>
+                            <div class="form-group full-span">
+                                <label>Nội dung cuối trang</label>
+                                <textarea class="write textarea-field" id="detail_closing_content" rows="4"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Tiêu đề thực đơn</label>
+                                <input class="write" type="text" id="detail_menu_title">
+                            </div>
+                            <div class="form-group">
+                                <label>Địa chỉ hiển thị</label>
+                                <input class="write" type="text" id="detail_address">
+                            </div>
+                            <div class="form-group">
+                                <label>Hotline</label>
+                                <input class="write" type="text" id="detail_hotline">
+                            </div>
+                            <div class="form-group">
+                                <label>Điểm đánh giá</label>
+                                <input class="write" type="number" step="0.1" min="0" max="5" id="detail_rating">
+                            </div>
+                            <div class="form-group">
+                                <label>Số lượng đánh giá</label>
+                                <input class="write" type="number" min="0" id="detail_review_count">
+                            </div>
+                            <div class="form-group">
+                                <label>Website</label>
+                                <input class="write" type="text" id="detail_website_url" placeholder="https://...">
+                            </div>
+                            <div class="form-group">
+                                <label>Facebook</label>
+                                <input class="write" type="text" id="detail_facebook_url" placeholder="https://...">
+                            </div>
+                            <div class="form-group">
+                                <label>TikTok</label>
+                                <input class="write" type="text" id="detail_tiktok_url" placeholder="https://...">
+                            </div>
+                            <div class="form-group">
+                                <label>Lưu ý đặt bàn</label>
+                                <textarea class="write textarea-field" id="detail_booking_note" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Lưu ý gửi xe</label>
+                                <textarea class="write textarea-field" id="detail_parking_note" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Thông tin thêm</label>
+                                <textarea class="write textarea-field" id="detail_open_note" rows="3"></textarea>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="location-form-section">
+                        <div class="location-section-head">
+                            <div>
+                                <h4>Ảnh cho trang chi tiết</h4>
+                                <p>Logo, ảnh cover và ảnh thực đơn có thể cấu hình riêng cho từng cơ sở.</p>
+                            </div>
+                        </div>
+
+                        <div class="detail-media-grid">
+                            <div class="detail-media-card">
+                                <div class="detail-media-label">Ảnh logo / brand</div>
+                                <div class="location-image-box detail-image-box">
+                                    <img id="detailLogoPreviewImage" src="" alt="" style="display:none;">
+                                    <span id="detailLogoAddImageText">Chưa có ảnh</span>
+                                    <button id="detailLogoRemoveImageBtn" type="button" class="remove-image-btn" style="display:none;">✕</button>
+                                </div>
+                                <div class="image-upload-actions">
+                                    <button type="button" id="detailLogoChooseImage" class="image-choice-btn">Chọn ảnh</button>
+                                </div>
+                                <input type="file" id="detailLogoImageInput" accept="image/*" hidden>
+                                <input type="hidden" id="detail_logo_image">
+                            </div>
+
+                            <div class="detail-media-card">
+                                <div class="detail-media-label">Ảnh cover đầu trang</div>
+                                <div class="location-image-box detail-image-box">
+                                    <img id="detailCoverPreviewImage" src="" alt="" style="display:none;">
+                                    <span id="detailCoverAddImageText">Chưa có ảnh</span>
+                                    <button id="detailCoverRemoveImageBtn" type="button" class="remove-image-btn" style="display:none;">✕</button>
+                                </div>
+                                <div class="image-upload-actions">
+                                    <button type="button" id="detailCoverChooseImage" class="image-choice-btn">Chọn ảnh</button>
+                                </div>
+                                <input type="file" id="detailCoverImageInput" accept="image/*" hidden>
+                                <input type="hidden" id="detail_cover_image">
+                            </div>
+
+                            <div class="detail-media-card">
+                                <div class="detail-media-label">Ảnh thực đơn</div>
+                                <div class="location-image-box detail-image-box">
+                                    <img id="detailMenuPreviewImage" src="" alt="" style="display:none;">
+                                    <span id="detailMenuAddImageText">Chưa có ảnh</span>
+                                    <button id="detailMenuRemoveImageBtn" type="button" class="remove-image-btn" style="display:none;">✕</button>
+                                </div>
+                                <div class="image-upload-actions">
+                                    <button type="button" id="detailMenuChooseImage" class="image-choice-btn">Chọn ảnh</button>
+                                </div>
+                                <input type="file" id="detailMenuImageInput" accept="image/*" hidden>
+                                <input type="hidden" id="detail_menu_image">
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="location-form-section">
+                        <div class="location-section-head">
+                            <div>
+                                <h4>Các block nội dung</h4>
+                                <p>Mỗi block gồm tiêu đề, nội dung, ảnh và thứ tự hiển thị trên trang chi tiết.</p>
+                            </div>
+                            <button type="button" id="addLocationSectionBtn" class="section-add-btn">
+                                <i class="fas fa-plus"></i> Thêm block
+                            </button>
+                        </div>
+
+                        <div id="locationSectionsList" class="detail-sections-list"></div>
+
+                        <template id="locationSectionTemplate">
+                            <article class="detail-section-card">
+                                <div class="detail-section-head">
+                                    <h5>Block nội dung</h5>
+                                    <button type="button" class="section-remove-btn">
+                                        <i class="far fa-trash-alt"></i> Xóa block
+                                    </button>
+                                </div>
+                                <div class="detail-section-grid">
+                                    <div class="form-group">
+                                        <label>Tiêu đề block</label>
+                                        <input class="write section-title-input" type="text">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Thứ tự hiển thị</label>
+                                        <input class="write section-sort-order-input" type="number" min="0">
+                                    </div>
+                                    <div class="form-group full-span">
+                                        <label>Nội dung block</label>
+                                        <textarea class="write textarea-field section-content-input" rows="5"></textarea>
+                                    </div>
+                                </div>
+                                <div class="detail-section-image-wrap">
+                                    <div class="location-image-box section-image-box">
+                                        <img class="section-preview-image" src="" alt="" style="display:none;">
+                                        <span class="section-add-image-text">Chưa có ảnh</span>
+                                        <button type="button" class="remove-image-btn section-remove-image-btn" style="display:none;">✕</button>
+                                    </div>
+                                    <div class="image-upload-actions">
+                                        <button type="button" class="image-choice-btn section-choose-image-btn">Chọn ảnh</button>
+                                    </div>
+                                    <input type="file" class="section-image-input" accept="image/*" hidden>
+                                    <input type="hidden" class="section-image-path-input">
+                                </div>
+                            </article>
+                        </template>
+                    </section>
                 </div>
                 <div class="form-actions">
                     @canany(['create_location','update_location'])

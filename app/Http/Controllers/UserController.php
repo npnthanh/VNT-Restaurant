@@ -3,18 +3,28 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Location;
+use App\Models\LocationDetail;
 use App\Models\News;
+use App\Models\Region;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Staff;
 
 class UserController extends Controller
 {
     public function home()     
     { 
-        return view('user.home'); 
+        $homeNews = News::published()
+            ->orderByDesc('is_featured')
+            ->orderByDesc('published_at')
+            ->orderByDesc('id')
+            ->limit(3)
+            ->get();
+
+        return view('user.home', compact('homeNews')); 
     }
 
     public function menu()
@@ -32,19 +42,33 @@ class UserController extends Controller
 
     public function location()  
     {
-        $regions = \App\Models\Region::whereHas('locations', function($q) {
+        $regions = Region::whereHas('locations', function($q) {
             $q->where('status', 'active');
         })->orderBy('name')->get();
-        $locations = \App\Models\Location::with('region')->where('status', 'active')->get();
-
-        // Format times
-        $locations->transform(function($location) {
-            $location->formatted_time_start = $location->time_start ? \Carbon\Carbon::parse($location->time_start)->format('H:i') : '09:00';
-            $location->formatted_time_end = $location->time_end ? \Carbon\Carbon::parse($location->time_end)->format('H:i') : '24:00';
-            return $location;
-        });
+        $locations = Location::with('region')
+            ->where('status', 'active')
+            ->get()
+            ->map(fn (Location $location) => $this->decorateLocation($location));
 
         return view('user.location', compact('regions', 'locations')); 
+    }
+
+    public function locationShow(string $slug)
+    {
+        $location = Location::with(['region', 'detail.sections'])
+            ->where('status', 'active')
+            ->where('slug', $slug)
+            ->firstOrFail();
+
+        $location = $this->decorateLocation($location);
+        $detail = $location->detail;
+
+        if (!$detail) {
+            $detail = new LocationDetail();
+            $detail->setRelation('sections', collect());
+        }
+
+        return view('user.location-detail', compact('location', 'detail'));
     }
 
     public function news()      
@@ -89,5 +113,20 @@ class UserController extends Controller
     public function contact()   
     { 
         return view('user.contact'); 
+    }
+
+    private function decorateLocation(Location $location): Location
+    {
+        $location->formatted_time_start = $location->time_start
+            ? \Carbon\Carbon::parse($location->time_start)->format('H:i')
+            : '09:00';
+        $location->formatted_time_end = $location->time_end
+            ? \Carbon\Carbon::parse($location->time_end)->format('H:i')
+            : '24:00';
+        $location->detail_url = $location->slug
+            ? route('location.show', ['slug' => $location->slug])
+            : route('location');
+
+        return $location;
     }
 }

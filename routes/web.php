@@ -50,6 +50,7 @@ Route::get('/menu/filter/{categoryId}', [MenuController::class, 'filter'])
     ->where('categoryId', '.*');
 
 Route::get('/location', [UserController::class, 'location'])->name('location');
+Route::get('/location/{slug}', [UserController::class, 'locationShow'])->name('location.show');
 
 Route::get('/news', [UserController::class, 'news'])->name('news');
 Route::get('/news/{news:slug}', [UserController::class, 'newsShow'])->name('news.show');

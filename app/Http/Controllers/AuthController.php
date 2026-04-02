@@ -10,9 +10,21 @@ use App\Models\Staff;
 
 class AuthController extends Controller
 {
-    public function showLogin()
+    public function showLogin(Request $request)
     {
-        return view('pos.login');
+        if (Auth::guard('staff')->check()) {
+            return redirect()->to(
+                $this->resolvePosRedirect(
+                    $request->session()->get('pos_last_login_action')
+                )
+            );
+        }
+
+        return response()
+            ->view('pos.login')
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', 'Sat, 01 Jan 2000 00:00:00 GMT');
     }
 
     public function login(Request $request)
@@ -58,9 +70,9 @@ class AuthController extends Controller
 
         if (Auth::guard('staff')->attempt($credentials)) {
             $request->session()->regenerate();
-            $redirect = $request->action === 'cashier'
-                ? route('pos.cashier')
-                : route('pos.kiot');
+            $action = $request->input('action') === 'cashier' ? 'cashier' : 'manage';
+            $request->session()->put('pos_last_login_action', $action);
+            $redirect = $this->resolvePosRedirect($action);
 
             if ($request->expectsJson()) {
                 return response()->json([
@@ -90,5 +102,12 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('login');
+    }
+
+    private function resolvePosRedirect(?string $action): string
+    {
+        return $action === 'cashier'
+            ? route('pos.cashier')
+            : route('pos.kiot');
     }
 }

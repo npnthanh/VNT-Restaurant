@@ -22,7 +22,7 @@
             <div class="slide" style="background-image: url('{{ asset('images/banner/banner3.png') }}');"></div>
         </div>
         <div class="home-hero-copy">
-            <span class="home-kicker">Quây hết mình cùng Tới Bến</span>
+            <span class="home-kicker">Quẩy hết mình cùng Tới Bến</span>
             <h1 class="home-hero-title">
                 Niềm vui là lý do<br>
                 Tới Bến là điểm đến
@@ -47,38 +47,40 @@
     </section>
 
     <div class="home-desktop-cta">
-        <a href="{{ route('menu') }}" class="menu">Xem thá»±c Ä‘Æ¡n</a>
+        <a href="{{ route('menu') }}" class="menu">Xem thực đơn</a>
     </div>
 
     <section class="news-section">
         <h2 class="news-title">Ưu đãi nổi bật</h2>
         <div class="news-container">
-            <div class="news-card">
-                <img src="{{ asset('images/news/news4.png') }}" alt="Sinh nhật độc nhất" class="news-img">
-                <div class="news-content">
-                    <h3>🎉 NGÀY CỦA BẠN, TỚI BẾN CÙNG BẠN</h3>
-                    <p>Sinh nhật không chỉ là một bữa tiệc, mà còn là dịp để tụ họp, ăn ngon và vui trọn khoảnh khắc.</p>
-                    <button class="news-btn">XEM NGAY</button>
-                </div>
-            </div>
-
-            <div class="news-card">
-                <img src="{{ asset('images/news/news2.png') }}" alt="Combo Tới Bến" class="news-img">
-                <div class="news-content">
-                    <h3>🔥 COMBO RA MẮT, GÓI TRỌN NIỀM VUI</h3>
-                    <p>Những set món được chọn sẵn cho nhóm bạn, vừa đủ no, vừa đủ vui, lên bàn là nhập tiệc ngay.</p>
-                    <button class="news-btn">XEM NGAY</button>
-                </div>
-            </div>
-
-            <div class="news-card">
-                <img src="{{ asset('images/news/news3.png') }}" alt="Bộ đôi trà đậm vị" class="news-img">
-                <div class="news-content">
-                    <h3>🥂 THÊM MÓN HAY, THÊM LÝ DO ĐỂ TỚI</h3>
-                    <p>Mỗi tuần một gợi ý mới cho buổi tụ tập, giúp thực đơn của nhóm bạn luôn có cảm giác mới mẻ.</p>
-                    <button class="news-btn">XEM NGAY</button>
-                </div>
-            </div>
+            @forelse($homeNews as $item)
+                @php
+                    $summary = trim((string) ($item->summary ?: strip_tags((string) $item->content)));
+                @endphp
+                <article class="news-card">
+                    <div class="news-media">
+                        <img
+                            src="{{ asset($item->image ?: 'images/news/news4.png') }}"
+                            alt="{{ $item->title }}"
+                            class="news-img"
+                            loading="lazy"
+                            decoding="async">
+                    </div>
+                    <div class="news-content">
+                        <h3>{{ $item->title }}</h3>
+                        <p>{{ \Illuminate\Support\Str::limit($summary, 140) }}</p>
+                        <a href="{{ route('news.show', $item) }}" class="news-btn">XEM NGAY</a>
+                    </div>
+                </article>
+            @empty
+                <article class="news-card news-card-empty">
+                    <div class="news-content">
+                        <h3>Ưu đãi đang được cập nhật</h3>
+                        <p>Chưa có bài viết nào được xuất bản. Vui lòng quay lại sau để xem các ưu đãi mới nhất.</p>
+                        <a href="{{ route('news') }}" class="news-btn">XEM TẤT CẢ</a>
+                    </div>
+                </article>
+            @endforelse
         </div>
         <div class="news-viewall">
             <a href="{{ route('news') }}">XEM TẤT CẢ</a>

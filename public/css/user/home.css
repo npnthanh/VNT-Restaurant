@@ -110,7 +110,7 @@
 
 .slide {
   min-width: 100%;
-  height: 755px;
+  height: 710px;
   background-size: cover;
   background-position: center;
   display: flex;
@@ -254,10 +254,17 @@
   box-shadow: 0 8px 20px rgba(0,0,0,0.25);
 }
 
+.news-media {
+  aspect-ratio: 17 / 10;
+  overflow: hidden;
+}
+
 .news-img {
   width: 100%;
-  height: 200px;
+  height: 100%;
   object-fit: cover;
+  object-position: center;
+  display: block;
 }
 
 .news-content {
@@ -294,11 +301,20 @@
   border-radius: 8px;
   cursor: pointer;
   transition: 0.3s ease;
+  display: block;
+  width: 100%;
+  margin-top: auto;
+  text-align: center;
+  text-decoration: none;
 }
 
 .news-btn:hover {
   background-color: #FFD36E;
   transform: scale(1.05);
+}
+
+.news-card-empty {
+  justify-content: center;
 }
 
 .news-viewall {

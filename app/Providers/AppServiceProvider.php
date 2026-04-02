@@ -27,7 +27,7 @@ class AppServiceProvider extends ServiceProvider
     {
         View::composer('user.partials.header', function ($view) {
             $locations = DB::table('location')
-                ->where('status', 1)
+                ->where('status', 'active')
                 ->orderBy('name')
                 ->get();
 

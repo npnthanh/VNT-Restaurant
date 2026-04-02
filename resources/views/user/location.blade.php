@@ -54,7 +54,7 @@
                         <div class="actions">
                             <button class="book"><i class="fa fa-book"></i> Đặt bàn ngay</button>
                             <button class="map"><i class="fa fa-map-marker"></i> Xem bản đồ</button>
-                            <button class="detail"><i class="fa fa-eye"></i> Xem chi tiết</button>
+                            <a class="detail" href="{{ $location->detail_url ?? route('location') }}"><i class="fa fa-eye"></i> Xem chi tiết</a>
                         </div>
 
                         <div class="phone">

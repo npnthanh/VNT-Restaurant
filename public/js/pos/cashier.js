@@ -67,6 +67,82 @@ document.addEventListener('DOMContentLoaded', () => {
         return Promise.resolve(window.confirm(message || 'Xác nhận?'));
     };
     const openConfirmDialog = confirmAction;
+
+    (function initAppConfirmDialog() {
+        if (typeof window.openConfirmDialog === 'function') {
+            return;
+        }
+
+        const overlay = document.getElementById('appConfirmOverlay');
+        if (!overlay) {
+            return;
+        }
+
+        const dialog = document.getElementById('appConfirmDialog');
+        const titleEl = document.getElementById('appConfirmTitle');
+        const messageEl = document.getElementById('appConfirmMessage');
+        const confirmBtn = document.getElementById('appConfirmOk');
+        const cancelBtn = document.getElementById('appConfirmCancel');
+        const closeBtn = document.getElementById('appConfirmClose');
+        const iconEl = overlay.querySelector('.app-confirm-icon i');
+        let resolveConfirm = null;
+        let keyHandler = null;
+
+        const closeConfirm = (result) => {
+            overlay.classList.remove('active');
+            overlay.setAttribute('aria-hidden', 'true');
+
+            if (resolveConfirm) {
+                resolveConfirm(Boolean(result));
+                resolveConfirm = null;
+            }
+
+            if (keyHandler) {
+                document.removeEventListener('keydown', keyHandler);
+                keyHandler = null;
+            }
+        };
+
+        window.openConfirmDialog = (message, options = {}) => {
+            const opts = options || {};
+            const msg = message || '';
+
+            if (titleEl) titleEl.textContent = opts.title || 'Xác nhận';
+            if (messageEl) messageEl.textContent = msg;
+            if (confirmBtn) confirmBtn.textContent = opts.confirmText || 'Đồng ý';
+            if (cancelBtn) cancelBtn.textContent = opts.cancelText || 'Hủy';
+            if (dialog) dialog.dataset.variant = opts.variant || '';
+            if (iconEl) iconEl.className = `fas ${opts.icon || 'fa-triangle-exclamation'}`;
+
+            overlay.classList.add('active');
+            overlay.setAttribute('aria-hidden', 'false');
+
+            if (confirmBtn && typeof confirmBtn.focus === 'function') {
+                confirmBtn.focus();
+            }
+
+            keyHandler = (event) => {
+                if (event.key === 'Escape') {
+                    closeConfirm(false);
+                }
+            };
+            document.addEventListener('keydown', keyHandler);
+
+            return new Promise((resolve) => {
+                resolveConfirm = resolve;
+            });
+        };
+
+        overlay.addEventListener('click', (event) => {
+            if (event.target === overlay) {
+                closeConfirm(false);
+            }
+        });
+
+        if (confirmBtn) confirmBtn.addEventListener('click', () => closeConfirm(true));
+        if (cancelBtn) cancelBtn.addEventListener('click', () => closeConfirm(false));
+        if (closeBtn) closeBtn.addEventListener('click', () => closeConfirm(false));
+    })();
     
     const typeMap = {
     Food: 'Đồ ăn',

@@ -236,9 +236,11 @@
   margin-bottom: 60px;
 }
 
-.actions button {
+.actions button,
+.actions a {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   padding: 20px 40px;
   border: none;
@@ -248,18 +250,22 @@
   transition: all 0.25s ease;
   background: #F2F4F3;
   color: #174A27;
+  text-decoration: none;
 }
 
-.actions button i {
+.actions button i,
+.actions a i {
   font-size: 14px;
 }
 
-.actions button:hover {
+.actions button:hover,
+.actions a:hover {
   background: #174A27;
   color: #fff;
 }
 
-.actions button:hover i {
+.actions button:hover i,
+.actions a:hover i {
   color: #fff;
 }
 
@@ -273,8 +279,9 @@
   color: #fff;
 }
 
-.actions button:hover i {
-  color: #fff;
+.actions button.is-disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .actions .map,

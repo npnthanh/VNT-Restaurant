@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const bindLocationActions = (location) => {
     const bookBtn = container.querySelector('.book');
     const mapBtn = container.querySelector('.map');
+    const detailLink = container.querySelector('.detail');
 
     bookBtn?.addEventListener('click', () => {
       if (typeof window.openUserBookingModal === 'function') {
@@ -34,6 +35,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     setMapButton(mapBtn, location.map_url);
+
+    if (detailLink) {
+      detailLink.href = location.detail_url || '#';
+    }
   };
 
   const updateLocationDisplay = (location) => {

@@ -24,8 +24,6 @@ async function readJsonResponse(res) {
 
 var locationSelectControls = [];
 
-let selectedFile = null;
-
 var closeLocationSelectMenus = function () {
     locationSelectControls.forEach(function (control) {
         control.close();
@@ -141,6 +139,109 @@ document.addEventListener("keydown", function (event) {
     }
 });
 
+function resolveAsset(src) {
+    if (!src) {
+        return "";
+    }
+    if (/^(https?:)?\/\//i.test(src) || src.indexOf("data:") === 0) {
+        return src;
+    }
+    return `${window.routes.assetUrl}${String(src).replace(/^\/+/, "")}`;
+}
+
+function createImageManager(config) {
+    const previewImage = config.previewImage;
+    const placeholderText = config.placeholderText;
+    const removeButton = config.removeButton;
+    const chooseButton = config.chooseButton;
+    const fileInput = config.fileInput;
+    const pathInput = config.pathInput;
+    let selectedFile = null;
+
+    const showPreview = function (src) {
+        if (!previewImage || !placeholderText) {
+            return;
+        }
+        previewImage.src = src;
+        previewImage.style.display = "block";
+        placeholderText.style.display = "none";
+        if (removeButton) {
+            removeButton.style.display = "inline-flex";
+        }
+    };
+
+    const clear = function () {
+        selectedFile = null;
+        if (previewImage) {
+            previewImage.src = "";
+            previewImage.style.display = "none";
+        }
+        if (placeholderText) {
+            placeholderText.style.display = "block";
+        }
+        if (removeButton) {
+            removeButton.style.display = "none";
+        }
+        if (fileInput) {
+            fileInput.value = "";
+        }
+        if (pathInput) {
+            pathInput.value = "";
+        }
+    };
+
+    const setStored = function (path) {
+        selectedFile = null;
+        if (fileInput) {
+            fileInput.value = "";
+        }
+        if (pathInput) {
+            pathInput.value = path || "";
+        }
+        if (path) {
+            showPreview(resolveAsset(path));
+        } else {
+            clear();
+        }
+    };
+
+    chooseButton?.addEventListener("click", function () {
+        fileInput?.click();
+    });
+
+    fileInput?.addEventListener("change", function () {
+        const file = fileInput.files?.[0];
+        if (!file) {
+            return;
+        }
+        selectedFile = file;
+        if (pathInput) {
+            pathInput.value = "";
+        }
+        const reader = new FileReader();
+        reader.onload = function (event) {
+            showPreview(event.target.result);
+        };
+        reader.readAsDataURL(file);
+    });
+
+    removeButton?.addEventListener("click", function (event) {
+        event.preventDefault();
+        clear();
+    });
+
+    return {
+        clear: clear,
+        setStored: setStored,
+        getFile: function () {
+            return selectedFile;
+        },
+        getPath: function () {
+            return pathInput ? pathInput.value.trim() : "";
+        }
+    };
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     const csrfToken = document
         .querySelector('meta[name="csrf-token"]')
@@ -181,7 +282,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const locationCodeInput = document.getElementById("location_code");
     const locationNameInput = document.getElementById("location_name");
     const locationRegionSelect = document.getElementById("location_region");
-    const locationThumbnailInput = document.getElementById("location_thumbnail");
     const locationCapacityInput = document.getElementById("location_capacity");
     const locationAreaInput = document.getElementById("location_area");
     const locationFloorsInput = document.getElementById("location_floors");
@@ -189,12 +289,25 @@ document.addEventListener("DOMContentLoaded", function () {
     const locationTimeEndInput = document.getElementById("location_time_end");
     const locationStatusSelect = document.getElementById("location_status");
     const locationMapUrlInput = document.getElementById("location_map_url");
-    const locationImageInput = document.getElementById("locationImageInput");
-    const locationPreviewImage = document.getElementById("locationPreviewImage");
-    const locationImageBox = document.getElementById("locationImageBox");
-    const locationAddImageText = document.getElementById("locationAddImageText");
-    const locationRemoveImageBtn = document.getElementById("locationRemoveImageBtn");
-    const locationChooseImageBtn = document.getElementById("locationChooseImage");
+    const detailSummaryInput = document.getElementById("detail_summary");
+    const detailIntroTitleInput = document.getElementById("detail_intro_title");
+    const detailIntroContentInput = document.getElementById("detail_intro_content");
+    const detailMenuTitleInput = document.getElementById("detail_menu_title");
+    const detailClosingTitleInput = document.getElementById("detail_closing_title");
+    const detailClosingContentInput = document.getElementById("detail_closing_content");
+    const detailAddressInput = document.getElementById("detail_address");
+    const detailHotlineInput = document.getElementById("detail_hotline");
+    const detailRatingInput = document.getElementById("detail_rating");
+    const detailReviewCountInput = document.getElementById("detail_review_count");
+    const detailWebsiteUrlInput = document.getElementById("detail_website_url");
+    const detailFacebookUrlInput = document.getElementById("detail_facebook_url");
+    const detailTiktokUrlInput = document.getElementById("detail_tiktok_url");
+    const detailBookingNoteInput = document.getElementById("detail_booking_note");
+    const detailParkingNoteInput = document.getElementById("detail_parking_note");
+    const detailOpenNoteInput = document.getElementById("detail_open_note");
+    const sectionsList = document.getElementById("locationSectionsList");
+    const sectionTemplate = document.getElementById("locationSectionTemplate");
+    const addLocationSectionBtn = document.getElementById("addLocationSectionBtn");
 
     const normalizeTimeValue = (value) => {
         if (!value) return "";
@@ -211,6 +324,128 @@ document.addEventListener("DOMContentLoaded", function () {
         status: "all"
     };
     let editingRegionId = null;
+    const locationImageManager = createImageManager({
+        previewImage: document.getElementById("locationPreviewImage"),
+        placeholderText: document.getElementById("locationAddImageText"),
+        removeButton: document.getElementById("locationRemoveImageBtn"),
+        chooseButton: document.getElementById("locationChooseImage"),
+        fileInput: document.getElementById("locationImageInput"),
+        pathInput: document.getElementById("location_thumbnail")
+    });
+    const detailLogoManager = createImageManager({
+        previewImage: document.getElementById("detailLogoPreviewImage"),
+        placeholderText: document.getElementById("detailLogoAddImageText"),
+        removeButton: document.getElementById("detailLogoRemoveImageBtn"),
+        chooseButton: document.getElementById("detailLogoChooseImage"),
+        fileInput: document.getElementById("detailLogoImageInput"),
+        pathInput: document.getElementById("detail_logo_image")
+    });
+    const detailCoverManager = createImageManager({
+        previewImage: document.getElementById("detailCoverPreviewImage"),
+        placeholderText: document.getElementById("detailCoverAddImageText"),
+        removeButton: document.getElementById("detailCoverRemoveImageBtn"),
+        chooseButton: document.getElementById("detailCoverChooseImage"),
+        fileInput: document.getElementById("detailCoverImageInput"),
+        pathInput: document.getElementById("detail_cover_image")
+    });
+    const detailMenuManager = createImageManager({
+        previewImage: document.getElementById("detailMenuPreviewImage"),
+        placeholderText: document.getElementById("detailMenuAddImageText"),
+        removeButton: document.getElementById("detailMenuRemoveImageBtn"),
+        chooseButton: document.getElementById("detailMenuChooseImage"),
+        fileInput: document.getElementById("detailMenuImageInput"),
+        pathInput: document.getElementById("detail_menu_image")
+    });
+
+    function refreshSectionHeadings() {
+        Array.from(sectionsList?.querySelectorAll(".detail-section-card") || []).forEach((card, index) => {
+            const heading = card.querySelector(".detail-section-head h5");
+            if (heading) {
+                heading.textContent = `Block nội dung ${index + 1}`;
+            }
+        });
+    }
+
+    function createSectionCard(section = {}) {
+        if (!sectionTemplate || !sectionsList) {
+            return null;
+        }
+        const fragment = sectionTemplate.content.cloneNode(true);
+        const card = fragment.querySelector(".detail-section-card");
+        const imageManager = createImageManager({
+            previewImage: card.querySelector(".section-preview-image"),
+            placeholderText: card.querySelector(".section-add-image-text"),
+            removeButton: card.querySelector(".section-remove-image-btn"),
+            chooseButton: card.querySelector(".section-choose-image-btn"),
+            fileInput: card.querySelector(".section-image-input"),
+            pathInput: card.querySelector(".section-image-path-input")
+        });
+
+        card.querySelector(".section-title-input").value = section.title || "";
+        card.querySelector(".section-content-input").value = section.content || "";
+        card.querySelector(".section-sort-order-input").value =
+            section.sort_order !== undefined && section.sort_order !== null ? section.sort_order : "";
+        imageManager.setStored(section.image || "");
+        card._imageManager = imageManager;
+
+        card.querySelector(".section-remove-btn")?.addEventListener("click", () => {
+            card.remove();
+            refreshSectionHeadings();
+        });
+
+        sectionsList.appendChild(card);
+        refreshSectionHeadings();
+        return card;
+    }
+
+    function renderSections(sections = []) {
+        if (!sectionsList) {
+            return;
+        }
+        sectionsList.innerHTML = "";
+        sections.forEach((section) => createSectionCard(section));
+    }
+
+    function resetDetailFields() {
+        detailSummaryInput.value = "";
+        detailIntroTitleInput.value = "";
+        detailIntroContentInput.value = "";
+        detailMenuTitleInput.value = "";
+        detailClosingTitleInput.value = "";
+        detailClosingContentInput.value = "";
+        detailAddressInput.value = "";
+        detailHotlineInput.value = "";
+        detailRatingInput.value = "";
+        detailReviewCountInput.value = "";
+        detailWebsiteUrlInput.value = "";
+        detailFacebookUrlInput.value = "";
+        detailTiktokUrlInput.value = "";
+        detailBookingNoteInput.value = "";
+        detailParkingNoteInput.value = "";
+        detailOpenNoteInput.value = "";
+        detailLogoManager.clear();
+        detailCoverManager.clear();
+        detailMenuManager.clear();
+        renderSections([]);
+    }
+
+    function resetLocationForm() {
+        locationForm.reset();
+        locationIdInput.value = "";
+        locationCodeInput.value = "";
+        locationNameInput.value = "";
+        locationRegionSelect.value = "";
+        locationCapacityInput.value = "";
+        locationAreaInput.value = "";
+        locationFloorsInput.value = "";
+        locationTimeStartInput.value = "";
+        locationTimeEndInput.value = "";
+        locationStatusSelect.value = "active";
+        locationMapUrlInput.value = "";
+        locationImageManager.clear();
+        resetDetailFields();
+        syncLocationSelects();
+    }
 
     if (regionDisplay) {
         regionDisplay.addEventListener("click", (event) => {
@@ -554,18 +789,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
             const location = data.data;
+            const detail = location.detail || {};
             locationIdInput.value = location.id;
             locationCodeInput.value = location.code || "";
             locationNameInput.value = location.name || "";
             locationRegionSelect.value = location.region_id || "";
-            if (location.thumbnail) {
-                locationThumbnailInput.value = location.thumbnail;
-                updateLocationPreview(location.thumbnail);
-            } else {
-                locationThumbnailInput.value = "";
-                clearLocationPreview();
-            }
-            selectedFile = null;
+            locationImageManager.setStored(location.thumbnail || "");
             locationCapacityInput.value = location.capacity || "";
             locationAreaInput.value = location.area || "";
             locationFloorsInput.value = location.floors || "";
@@ -575,6 +804,26 @@ document.addEventListener("DOMContentLoaded", function () {
             if (locationMapUrlInput) {
                 locationMapUrlInput.value = location.map_url || "";
             }
+            detailSummaryInput.value = detail.summary || "";
+            detailIntroTitleInput.value = detail.intro_title || "";
+            detailIntroContentInput.value = detail.intro_content || "";
+            detailMenuTitleInput.value = detail.menu_title || "";
+            detailClosingTitleInput.value = detail.closing_title || "";
+            detailClosingContentInput.value = detail.closing_content || "";
+            detailAddressInput.value = detail.address || "";
+            detailHotlineInput.value = detail.hotline || "";
+            detailRatingInput.value = detail.rating || "";
+            detailReviewCountInput.value = detail.review_count || "";
+            detailWebsiteUrlInput.value = detail.website_url || "";
+            detailFacebookUrlInput.value = detail.facebook_url || "";
+            detailTiktokUrlInput.value = detail.tiktok_url || "";
+            detailBookingNoteInput.value = detail.booking_note || "";
+            detailParkingNoteInput.value = detail.parking_note || "";
+            detailOpenNoteInput.value = detail.open_note || "";
+            detailLogoManager.setStored(detail.logo_image || "");
+            detailCoverManager.setStored(detail.cover_image || "");
+            detailMenuManager.setStored(detail.menu_image || "");
+            renderSections(detail.sections || []);
             if (typeof syncLocationSelects === "function") {
                 syncLocationSelects();
             }
@@ -583,24 +832,6 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error("Lỗi load địa điểm:", err);
             showToast("Không thể tải thông tin địa điểm", "error");
         }
-    }
-
-    function updateLocationPreview(src) {
-        if (!locationPreviewImage || !locationAddImageText) return;
-        locationPreviewImage.src = window.routes.assetUrl + src;
-        locationPreviewImage.style.display = "block";
-        locationAddImageText.style.display = "none";
-        locationRemoveImageBtn && (locationRemoveImageBtn.style.display = "inline-flex");
-    }
-
-    function clearLocationPreview() {
-        if (!locationPreviewImage || !locationAddImageText) return;
-        locationPreviewImage.src = "";
-        locationPreviewImage.style.display = "none";
-        locationAddImageText.style.display = "block";
-        if (locationRemoveImageBtn) locationRemoveImageBtn.style.display = "none";
-        if (locationImageInput) locationImageInput.value = "";
-        if (locationThumbnailInput) locationThumbnailInput.value = "";
     }
 
     function openLocationForm(isEdit = false) {
@@ -613,47 +844,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function closeLocationForm() {
         locationFormOverlay.style.display = "none";
-        locationForm.reset();
-        locationIdInput.value = "";
-        clearLocationPreview();
+        resetLocationForm();
     }
 
     locationFormClose?.addEventListener("click", closeLocationForm);
     locationCancelBtn?.addEventListener("click", closeLocationForm);
+    locationFormOverlay?.addEventListener("click", (event) => {
+        if (event.target === locationFormOverlay) {
+            closeLocationForm();
+        }
+    });
 
     addLocationBtn?.addEventListener("click", () => {
-        locationForm.reset();
-        locationIdInput.value = "";
-        clearLocationPreview();
-        selectedFile = null;
+        resetLocationForm();
         openLocationForm(false);
     });
 
-    locationChooseImageBtn?.addEventListener("click", () => {
-        locationImageInput?.click();
-    });
-
-    locationImageInput?.addEventListener("change", () => {
-        const file = locationImageInput.files?.[0];
-        if (!file) return;
-        selectedFile = file;
-        locationThumbnailInput.value = "";
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const result = e.target.result;
-            locationPreviewImage.src = result;
-            locationPreviewImage.style.display = "block";
-            locationAddImageText.style.display = "none";
-            locationRemoveImageBtn && (locationRemoveImageBtn.style.display = "inline-flex");
-        };
-        reader.readAsDataURL(file);
-    });
-
-    locationRemoveImageBtn?.addEventListener("click", (event) => {
-        event.preventDefault();
-        clearLocationPreview();
-        selectedFile = null;
-        locationThumbnailInput.value = "";
+    addLocationSectionBtn?.addEventListener("click", () => {
+        createSectionCard({});
     });
 
     locationSaveBtn?.addEventListener("click", async () => {
@@ -662,12 +870,11 @@ document.addEventListener("DOMContentLoaded", function () {
             code: locationCodeInput.value.trim(),
             name: locationNameInput.value.trim(),
             region_id: locationRegionSelect.value,
-            thumbnail: locationThumbnailInput.value.trim(),
-            capacity: locationCapacityInput.value ? Number(locationCapacityInput.value) : null,
-            area: locationAreaInput.value ? Number(locationAreaInput.value) : null,
-            floors: locationFloorsInput.value ? Number(locationFloorsInput.value) : null,
-            time_start: locationTimeStartInput.value || null,
-            time_end: locationTimeEndInput.value || null,
+            capacity: locationCapacityInput.value,
+            area: locationAreaInput.value,
+            floors: locationFloorsInput.value,
+            time_start: locationTimeStartInput.value || "",
+            time_end: locationTimeEndInput.value || "",
             status: locationStatusSelect.value,
             map_url: locationMapUrlInput ? locationMapUrlInput.value.trim() : ""
         };
@@ -680,44 +887,86 @@ document.addEventListener("DOMContentLoaded", function () {
         const url = id
             ? window.routes.location.updatePattern.replace("__ID__", id)
             : window.routes.location.store;
+        const formData = new FormData();
 
-        let body, headers;
-        if (selectedFile) {
-            const formData = new FormData();
-            for (let key in payload) {
-                formData.append(key, payload[key]);
-            }
-            formData.append('thumbnail', selectedFile);
-            body = formData;
-            headers = {
-                "X-CSRF-TOKEN": csrfToken,
-                "Accept": "application/json",
-                "X-Requested-With": "XMLHttpRequest"
-            };
+        Object.keys(payload).forEach((key) => {
+            formData.append(key, payload[key]);
+        });
+
+        if (locationImageManager.getFile()) {
+            formData.append("thumbnail", locationImageManager.getFile());
         } else {
-            body = JSON.stringify(payload);
-            headers = {
-                "Content-Type": "application/json",
-                "X-CSRF-TOKEN": csrfToken,
-                "Accept": "application/json",
-                "X-Requested-With": "XMLHttpRequest"
-            };
+            formData.append("thumbnail", locationImageManager.getPath());
         }
+
+        formData.append("detail[summary]", detailSummaryInput.value.trim());
+        formData.append("detail[intro_title]", detailIntroTitleInput.value.trim());
+        formData.append("detail[intro_content]", detailIntroContentInput.value.trim());
+        formData.append("detail[menu_title]", detailMenuTitleInput.value.trim());
+        formData.append("detail[closing_title]", detailClosingTitleInput.value.trim());
+        formData.append("detail[closing_content]", detailClosingContentInput.value.trim());
+        formData.append("detail[address]", detailAddressInput.value.trim());
+        formData.append("detail[hotline]", detailHotlineInput.value.trim());
+        formData.append("detail[rating]", detailRatingInput.value.trim());
+        formData.append("detail[review_count]", detailReviewCountInput.value.trim());
+        formData.append("detail[website_url]", detailWebsiteUrlInput.value.trim());
+        formData.append("detail[facebook_url]", detailFacebookUrlInput.value.trim());
+        formData.append("detail[tiktok_url]", detailTiktokUrlInput.value.trim());
+        formData.append("detail[booking_note]", detailBookingNoteInput.value.trim());
+        formData.append("detail[parking_note]", detailParkingNoteInput.value.trim());
+        formData.append("detail[open_note]", detailOpenNoteInput.value.trim());
+        formData.append("detail[logo_image]", detailLogoManager.getPath());
+        formData.append("detail[cover_image]", detailCoverManager.getPath());
+        formData.append("detail[menu_image]", detailMenuManager.getPath());
+
+        if (detailLogoManager.getFile()) {
+            formData.append("detail_logo_image_file", detailLogoManager.getFile());
+        }
+        if (detailCoverManager.getFile()) {
+            formData.append("detail_cover_image_file", detailCoverManager.getFile());
+        }
+        if (detailMenuManager.getFile()) {
+            formData.append("detail_menu_image_file", detailMenuManager.getFile());
+        }
+
+        Array.from(sectionsList?.querySelectorAll(".detail-section-card") || []).forEach((card, index) => {
+            const title = card.querySelector(".section-title-input")?.value.trim() || "";
+            const content = card.querySelector(".section-content-input")?.value.trim() || "";
+            const sortOrder = card.querySelector(".section-sort-order-input")?.value.trim() || "";
+            const imageManager = card._imageManager;
+            const imagePath = imageManager ? imageManager.getPath() : "";
+            const imageFile = imageManager ? imageManager.getFile() : null;
+
+            if (!title && !content && !imagePath && !imageFile) {
+                return;
+            }
+
+            formData.append(`sections[${index}][title]`, title);
+            formData.append(`sections[${index}][content]`, content);
+            formData.append(`sections[${index}][sort_order]`, sortOrder);
+            formData.append(`sections[${index}][image]`, imagePath);
+            if (imageFile) {
+                formData.append(`section_image_files[${index}]`, imageFile);
+            }
+        });
 
         try {
             const res = await fetch(url, {
                 method: "POST",
-                headers,
-                body
+                headers: {
+                    "X-CSRF-TOKEN": csrfToken,
+                    "Accept": "application/json",
+                    "X-Requested-With": "XMLHttpRequest"
+                },
+                body: formData
             });
             const data = await readJsonResponse(res);
             if (res.ok && data.success) {
                 showToast(id ? "Cập nhật địa điểm thành công" : "Thêm địa điểm thành công", "success");
-                selectedFile = null;
                 closeLocationForm();
                 setTimeout(() => location.reload(), 600);
             } else {
-                showToast(data.message || "Không thể lưu địa điểm", "error");
+                showToast(getJsonErrorMessage(data, "Không thể lưu địa điểm"), "error");
             }
         } catch (err) {
             console.error(err);

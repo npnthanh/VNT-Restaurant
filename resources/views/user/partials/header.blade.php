@@ -30,7 +30,7 @@
 
     <ul class="list">
         <li><a class="{{ request()->routeIs('menu') ? 'active' : '' }}" href="{{ route('menu') }}">THỰC ĐƠN</a></li>
-        <li><a class="{{ request()->routeIs('location') ? 'active' : '' }}" href="{{ route('location') }}">CƠ SỞ</a></li>
+        <li><a class="{{ request()->routeIs('location*') ? 'active' : '' }}" href="{{ route('location') }}">CƠ SỞ</a></li>
         <li><a class="{{ request()->routeIs('news') ? 'active' : '' }}" href="{{ route('news') }}">ƯU ĐÃI</a></li>
         <li><a class="{{ request()->routeIs('contact') ? 'active' : '' }}" href="{{ route('contact') }}">LIÊN HỆ</a></li>
         <li>
@@ -53,7 +53,7 @@
         <nav class="mobile-nav-links" aria-label="Điều hướng di động">
             <a class="{{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">Trang chủ</a>
             <a class="{{ request()->routeIs('menu') ? 'active' : '' }}" href="{{ route('menu') }}">Thực đơn</a>
-            <a class="{{ request()->routeIs('location') ? 'active' : '' }}" href="{{ route('location') }}">Cơ sở</a>
+            <a class="{{ request()->routeIs('location*') ? 'active' : '' }}" href="{{ route('location') }}">Cơ sở</a>
             <a class="{{ request()->routeIs('news') ? 'active' : '' }}" href="{{ route('news') }}">Ưu đãi</a>
             <a class="{{ request()->routeIs('contact') ? 'active' : '' }}" href="{{ route('contact') }}">Liên hệ</a>
         </nav>

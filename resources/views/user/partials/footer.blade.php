@@ -33,10 +33,10 @@
 
             <div class="credit">
                 <div class="list-social">
-                    <a href="#" data-typein="1" target="_blank" rel="nofollow" class="social-link fb"><span class="icon"></span></a>
-                    <a href="#" data-typein="4" target="_blank" rel="nofollow" class="social-link tiktok"><span class="icon"></span></a>
-                    <a href="#" data-typein="3" target="_blank" rel="nofollow" class="social-link ig"><span class="icon"></span></a>
-                    <a href="#" data-typein="5" target="_blank" rel="nofollow" class="social-link yt"><span class="icon"></span></a>
+                    <a href="https://www.facebook.com/ocnamtu" data-typein="1" target="_blank" rel="nofollow" class="social-link fb"><span class="icon"></span></a>
+                    <a href="https://www.tiktok.com/@ocnamtu2212" data-typein="4" target="_blank" rel="nofollow" class="social-link tiktok"><span class="icon"></span></a>
+                    <a href="https://www.instagram.com/ocnamtu/" data-typein="3" target="_blank" rel="nofollow" class="social-link ig"><span class="icon"></span></a>
+                    <a href="https://www.instagram.com/ocnamtu/" data-typein="5" target="_blank" rel="nofollow" class="social-link yt"><span class="icon"></span></a>
                 </div>
                 <div class="cre">© 2023 Tới Bến Quán</div>
             </div>
