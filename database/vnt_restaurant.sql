@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th4 01, 2026 lúc 10:10 AM
+-- Thời gian đã tạo: Th4 02, 2026 lúc 04:57 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -1193,6 +1193,7 @@ CREATE TABLE `location` (
   `thumbnail` varchar(255) DEFAULT NULL,
   `status` enum('active','inactive') DEFAULT 'active',
   `name` varchar(150) NOT NULL,
+  `slug` varchar(180) DEFAULT NULL,
   `capacity` int(11) DEFAULT NULL,
   `area` decimal(8,2) DEFAULT NULL,
   `floors` int(11) DEFAULT NULL,
@@ -1206,8 +1207,64 @@ CREATE TABLE `location` (
 -- Đang đổ dữ liệu cho bảng `location`
 --
 
-INSERT INTO `location` (`id`, `region_id`, `code`, `thumbnail`, `status`, `name`, `capacity`, `area`, `floors`, `time_start`, `time_end`, `created_at`, `map_url`) VALUES
-(1, 1, 'tbqdonghia', 'images/location/1768540586_L12L04.jpg', 'active', 'U04-L18, KĐT Đô Nghĩa', 210, 400.00, 2, '09:00:00', '02:00:00', '2025-11-25 19:27:41', 'https://www.google.com/maps/place/Shin+-+Buffet+L%E1%BA%A9u+N%C6%B0%E1%BB%9Bng+139k/@20.9578528,105.7177341,15z/data=!4m20!1m13!4m12!1m4!2m2!1d105.7415611!2d20.9518899!4e1!1m6!1m2!1s0x3134530079db0fb5:0x2ac90a90fb659151!2z4buQYyBOxINtIFTGsCwgWFE5SCtYViwgUC4gUXVhbmcgVHJ1bmcsIEjDoCDEkMO0bmcsIEjDoCBO4buZaSwgVmnhu4d0IE5hbQ!2m2!1d105.7797629!2d20.9698494!3m5!1s0x313453551e2652d5:0xc363b3e3c51b0cbe!8m2!3d20.9578568!4d105.7367937!16s%2Fg%2F11y897v68v?entry=ttu&g_ep=EgoyMDI2MDEyOC4wIKXMDSoKLDEwMDc5MjA2N');
+INSERT INTO `location` (`id`, `region_id`, `code`, `thumbnail`, `status`, `name`, `slug`, `capacity`, `area`, `floors`, `time_start`, `time_end`, `created_at`, `map_url`) VALUES
+(1, 1, 'tbqdonghia', 'images/location/1768540586_L12L04.jpg', 'active', 'U04-L18, KĐT Đô Nghĩa', 'u04-l18-kdt-do-nghia', 210, 400.00, 2, '09:00:00', '02:00:00', '2025-11-25 19:27:41', 'https://www.google.com/maps/place/Shin+-+Buffet+L%E1%BA%A9u+N%C6%B0%E1%BB%9Bng+139k/@20.9578528,105.7177341,15z/data=!4m20!1m13!4m12!1m4!2m2!1d105.7415611!2d20.9518899!4e1!1m6!1m2!1s0x3134530079db0fb5:0x2ac90a90fb659151!2z4buQYyBOxINtIFTGsCwgWFE5SCtYViwgUC4gUXVhbmcgVHJ1bmcsIEjDoCDEkMO0bmcsIEjDoCBO4buZaSwgVmnhu4d0IE5hbQ!2m2!1d105.7797629!2d20.9698494!3m5!1s0x313453551e2652d5:0xc363b3e3c51b0cbe!8m2!3d20.9578568!4d105.7367937!16s%2Fg%2F11y897v68v?entry=ttu&g_ep=EgoyMDI2MDEyOC4wIKXMDSoKLDEwMDc5MjA2N');
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `location_details`
+--
+
+CREATE TABLE `location_details` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `location_id` bigint(20) UNSIGNED NOT NULL,
+  `logo_image` varchar(255) DEFAULT NULL,
+  `cover_image` varchar(255) DEFAULT NULL,
+  `summary` text DEFAULT NULL,
+  `intro_title` varchar(255) DEFAULT NULL,
+  `intro_content` longtext DEFAULT NULL,
+  `menu_title` varchar(255) DEFAULT NULL,
+  `menu_image` varchar(255) DEFAULT NULL,
+  `closing_title` varchar(255) DEFAULT NULL,
+  `closing_content` longtext DEFAULT NULL,
+  `address` varchar(255) DEFAULT NULL,
+  `hotline` varchar(50) DEFAULT NULL,
+  `rating` decimal(3,1) DEFAULT NULL,
+  `review_count` int(10) UNSIGNED DEFAULT NULL,
+  `website_url` varchar(500) DEFAULT NULL,
+  `facebook_url` varchar(500) DEFAULT NULL,
+  `tiktok_url` varchar(500) DEFAULT NULL,
+  `booking_note` text DEFAULT NULL,
+  `parking_note` text DEFAULT NULL,
+  `open_note` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `location_details`
+--
+
+INSERT INTO `location_details` (`id`, `location_id`, `logo_image`, `cover_image`, `summary`, `intro_title`, `intro_content`, `menu_title`, `menu_image`, `closing_title`, `closing_content`, `address`, `hotline`, `rating`, `review_count`, `website_url`, `facebook_url`, `tiktok_url`, `booking_note`, `parking_note`, `open_note`, `created_at`, `updated_at`) VALUES
+(1, 1, 'images/location/20260402215151_Yi1zzM6c.jpg', 'images/location/20260402215151_PYOrRv3B.jpg', 'Không gian ấm cúng, phù hợp cho gặp mặt bạn bè, liên hoan và đặt bàn trước.', 'Lẩu Cua Đồng Tự Do - 86 Ngọc Khánh', 'Cơ sở sở hữu không gian nhiều tầng, phong cách gần gũi và phù hợp cho các buổi tụ họp đông người. Bạn có thể thêm từng block nội dung và ảnh riêng cho từng khu vực.', 'Thực đơn tham khảo', 'images/location/20260402215151_hTc3U0op.jpg', NULL, NULL, 'U04-L18, KĐT Đô Nghĩa', '0961581328', 5.0, 123, NULL, NULL, NULL, NULL, NULL, NULL, '2026-04-02 14:20:15', '2026-04-02 14:52:23');
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `location_detail_sections`
+--
+
+CREATE TABLE `location_detail_sections` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `location_detail_id` bigint(20) UNSIGNED NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `content` longtext DEFAULT NULL,
+  `image` varchar(255) DEFAULT NULL,
+  `sort_order` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -1966,7 +2023,22 @@ ALTER TABLE `invoice_detail`
 ALTER TABLE `location`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `code` (`code`),
+  ADD UNIQUE KEY `location_slug_unique` (`slug`),
   ADD KEY `fk_location_region` (`region_id`);
+
+--
+-- Chỉ mục cho bảng `location_details`
+--
+ALTER TABLE `location_details`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `location_details_location_id_unique` (`location_id`);
+
+--
+-- Chỉ mục cho bảng `location_detail_sections`
+--
+ALTER TABLE `location_detail_sections`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `location_detail_sections_location_detail_id_index` (`location_detail_id`);
 
 --
 -- Chỉ mục cho bảng `migrations`
@@ -2193,6 +2265,18 @@ ALTER TABLE `location`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
+-- AUTO_INCREMENT cho bảng `location_details`
+--
+ALTER TABLE `location_details`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT cho bảng `location_detail_sections`
+--
+ALTER TABLE `location_detail_sections`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT cho bảng `migrations`
 --
 ALTER TABLE `migrations`
@@ -2305,6 +2389,18 @@ ALTER TABLE `invoice_detail`
 --
 ALTER TABLE `location`
   ADD CONSTRAINT `fk_location_region` FOREIGN KEY (`region_id`) REFERENCES `regions` (`id`);
+
+--
+-- Các ràng buộc cho bảng `location_details`
+--
+ALTER TABLE `location_details`
+  ADD CONSTRAINT `location_details_location_id_foreign` FOREIGN KEY (`location_id`) REFERENCES `location` (`id`) ON DELETE CASCADE;
+
+--
+-- Các ràng buộc cho bảng `location_detail_sections`
+--
+ALTER TABLE `location_detail_sections`
+  ADD CONSTRAINT `location_detail_sections_location_detail_id_foreign` FOREIGN KEY (`location_detail_id`) REFERENCES `location_details` (`id`) ON DELETE CASCADE;
 
 --
 -- Các ràng buộc cho bảng `product`

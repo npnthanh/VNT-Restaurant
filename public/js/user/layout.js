@@ -127,7 +127,10 @@ document.addEventListener('DOMContentLoaded', () => {
   window.closeUserBookingModal = closeBookingOverlay;
 
   bookingOpenButtons.forEach((button) => {
-    button.addEventListener('click', () => openBookingOverlay());
+    button.addEventListener('click', () => {
+      const locationId = button.dataset.locationId || '';
+      openBookingOverlay(locationId ? { locationId } : {});
+    });
   });
 
   if (closeBookingBtn && bookingOverlay) {

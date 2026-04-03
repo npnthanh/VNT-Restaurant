@@ -107,10 +107,10 @@
                             </div>
 
                             <div class="location-hero-actions">
-                                <a href="{{ route('customer.booking', ['location_id' => $location->id]) }}" class="location-hero-btn is-primary">
+                                <button type="button" class="location-hero-btn is-primary" data-open-booking data-location-id="{{ $location->id }}">
                                     <i class="fa fa-book"></i>
                                     <span>Đặt bàn ngay</span>
-                                </a>
+                                </button>
                                 <a href="{{ route('menu') }}" class="location-hero-btn">
                                     <i class="fa fa-utensils"></i>
                                     <span>Xem thực đơn</span>

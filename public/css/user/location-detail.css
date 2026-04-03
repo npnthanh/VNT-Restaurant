@@ -210,6 +210,7 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
+  cursor: pointer;
   min-height: 54px;
   padding: 0 22px;
   border-radius: 18px;
@@ -261,13 +262,27 @@
   color: var(--detail-gold);
 }
 
+.location-hero-media {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 4 / 5;
+  padding: 14px;
+  overflow: hidden;
+  border-radius: 24px;
+  border: 1px solid rgba(36, 48, 28, 0.08);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(244, 239, 228, 0.94));
+}
+
 .location-hero-media img {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  border-radius: 24px;
-  box-shadow: 0 18px 40px rgba(36, 48, 28, 0.18);
+  object-fit: contain;
+  object-position: center;
+  border-radius: 18px;
+  box-shadow: none;
 }
 
 .location-story-card,
@@ -298,19 +313,34 @@
 }
 
 .location-section-media {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(100%, 880px);
+  aspect-ratio: 16 / 10;
+  padding: 14px;
   margin: 22px 0 0;
+  margin-inline: auto;
+  overflow: hidden;
+  border-radius: 24px;
+  border: 1px solid rgba(36, 48, 28, 0.08);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(244, 239, 228, 0.94));
 }
 
 .location-section-media img {
   display: block;
   width: 100%;
-  border-radius: 24px;
-  object-fit: cover;
-  box-shadow: 0 22px 44px rgba(36, 48, 28, 0.12);
+  height: 100%;
+  border-radius: 18px;
+  object-fit: contain;
+  object-position: center;
+  box-shadow: none;
 }
 
-.location-section-media.is-poster img {
-  max-height: 960px;
+.location-section-media.is-poster {
+  width: min(100%, 720px);
+  aspect-ratio: 4 / 5;
 }
 
 .location-section-card.is-empty {
@@ -444,6 +474,11 @@
     padding: 22px;
   }
 
+  .location-hero-media {
+    aspect-ratio: 4 / 3;
+    padding: 10px;
+  }
+
   .location-brand-row {
     grid-template-columns: 1fr;
   }
@@ -461,6 +496,16 @@
   .location-sidebar-card {
     padding: 22px 18px;
     border-radius: 24px;
+  }
+
+  .location-section-media {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    padding: 10px;
+  }
+
+  .location-section-media.is-poster {
+    aspect-ratio: 3 / 4;
   }
 
   .location-detail-sidebar {
