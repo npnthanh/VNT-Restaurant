@@ -26,13 +26,17 @@ body {
 
 .cashier-wrapper {
     display:flex;
+    gap: 10px;
     height:100vh;
+    min-height: 100vh;
+    padding: 10px;
     background:#00408C
 }
 
 .left-panel {
-    width:65%;
-    padding:10px;
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 0;
 }
 
 .tab-content {
@@ -47,10 +51,10 @@ body {
 
 .right-panel {
     border-radius: 15px;
-    margin-top: 10px;
-    margin-right: 10px;
-    height: 98%;
+    flex: 0 0 auto;
+    min-width: 0;
     width:35%;
+    height: calc(100vh - 20px);
     background:#fff;
     display:flex;
     flex-direction:column
@@ -60,6 +64,8 @@ body {
     background: #00408C;
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
     gap: 12px;
     margin-bottom: 10px;
 }
@@ -74,10 +80,19 @@ body {
 
 .nav-tabs {
     display: flex;
+    flex-wrap: nowrap;
     list-style: none;
     padding: 0;
     margin: 0;
     gap: 8px;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.nav-tabs::-webkit-scrollbar {
+    display: none;
 }
 
 .nav-tabs li a {
@@ -98,6 +113,8 @@ body {
 .search-box {
     position: relative;
     width: 260px;
+    max-width: 100%;
+    flex: 0 0 260px;
 }
 
 .search-result {
@@ -143,7 +160,7 @@ body {
     padding: 8px 14px;
     border-radius: 20px;
     border: 1px solid #ddd;
-    width: 260px;
+    width: 100%;
 }
 
 .area-filter {
@@ -151,6 +168,7 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
+    flex-wrap: wrap;
 }
 
 .group-all a,
@@ -220,6 +238,7 @@ body {
 
 .nav-area {
     display: flex;
+    flex-wrap: wrap;
     list-style: none;
     gap: 8px;
     padding: 0;
@@ -951,9 +970,16 @@ body {
 
 .order-summary {
     display: flex;
-    gap: 150px;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
     padding:10px;
     border-top:1px solid #eee
+}
+
+.order-summary .total {
+    margin-left: auto;
+    text-align: right;
 }
 
 .order-actions {
@@ -1025,7 +1051,7 @@ body {
     position: fixed;
     top: 0;
     right: -100%;
-    width: 920px;
+    width: min(920px, 100vw);
     height: 100%;
     background: #fff;
     z-index: 1000;
