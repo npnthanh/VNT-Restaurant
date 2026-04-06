@@ -978,6 +978,52 @@
   cursor: pointer;
 }
 
+@media (max-width: 1440px) {
+  .overlay {
+    padding: 24px;
+    overflow: auto;
+  }
+
+  .modal {
+    width: min(650px, calc(100vw - 48px));
+    max-height: calc(100vh - 48px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .tabs {
+    flex-shrink: 0;
+  }
+
+  .tab-content {
+    min-height: 0;
+    padding: 18px 22px;
+  }
+
+  .tab-content.active {
+    flex: 1 1 auto;
+    overflow-y: auto;
+  }
+
+  .image-upload-wrap {
+    width: min(150px, 100%);
+    height: min(150px, 22vh);
+    min-height: 110px;
+  }
+
+  .form-actions {
+    margin-top: 18px;
+    padding-bottom: 2px;
+  }
+
+  .popup-box {
+    width: min(350px, calc(100vw - 48px));
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
+  }
+}
+
 /* Custom dropdowns */
 .product-select {
   position: relative;

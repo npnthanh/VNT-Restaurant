@@ -40,6 +40,33 @@ body {
   height: 56px;
 }
 
+@media (min-width: 1025px) {
+  .header-top {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    justify-content: normal;
+  }
+
+  .header-left {
+    justify-self: start;
+    min-width: 0;
+  }
+
+  .header-mid {
+    flex: none;
+    justify-self: center;
+    justify-content: center;
+    width: max-content;
+    max-width: 100%;
+  }
+
+  .header-right {
+    justify-self: end;
+    justify-content: flex-end;
+    min-width: 0;
+  }
+}
+
 .header-left {
   flex: 0 0 auto;
   display: flex;
