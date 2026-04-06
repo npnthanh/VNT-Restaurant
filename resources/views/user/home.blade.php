@@ -17,9 +17,9 @@
 
     <section class="slider home-hero">
         <div class="slides">
-            <div class="slide active" style="background-image: url('{{ asset('images/banner/banner1.png') }}');"></div>
-            <div class="slide" style="background-image: url('{{ asset('images/banner/banner2.png') }}');"></div>
-            <div class="slide" style="background-image: url('{{ asset('images/banner/banner3.png') }}');"></div>
+            <div class="slide active" style="background-image: url('{{ asset('images/banner/Banner1.png') }}');"></div>
+            <div class="slide" style="background-image: url('{{ asset('images/banner/Banner2.png') }}');"></div>
+            <div class="slide" style="background-image: url('{{ asset('images/banner/Banner3.png') }}');"></div>
         </div>
         <div class="home-hero-copy">
             <span class="home-kicker">Quẩy hết mình cùng Tới Bến</span>
