@@ -12,20 +12,26 @@
     </div>
 
     @push('css')
-        <link rel="stylesheet" href="{{ asset('css/user/home.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/user/home.css') }}?v={{ filemtime(public_path('css/user/home.css')) }}">
     @endpush
 
     <section class="slider home-hero">
         <div class="slides">
-            <div class="slide active" style="background-image: url('{{ asset('images/banner/Banner1.png') }}');"></div>
-            <div class="slide" style="background-image: url('{{ asset('images/banner/Banner2.png') }}');"></div>
-            <div class="slide" style="background-image: url('{{ asset('images/banner/Banner3.png') }}');"></div>
+            <div class="slide active" style="background-image: url('{{ asset('images/banner/Banner1.png') }}');">
+                <img class="mobile-hero-art" src="{{ asset('images/banner/banner-mobile-1.png') }}" alt="" loading="eager" decoding="async">
+            </div>
+            <div class="slide" style="background-image: url('{{ asset('images/banner/Banner2.png') }}');">
+                <img class="mobile-hero-art" src="{{ asset('images/banner/banner-mobile-2.png') }}" alt="" loading="eager" decoding="async">
+            </div>
+            <div class="slide" style="background-image: url('{{ asset('images/banner/Banner3.png') }}');">
+                <img class="mobile-hero-art" src="{{ asset('images/banner/banner-mobile-3.png') }}" alt="" loading="eager" decoding="async">
+            </div>
         </div>
         <div class="home-hero-copy">
             <span class="home-kicker">Quẩy hết mình cùng Tới Bến</span>
             <h1 class="home-hero-title">
-                Niềm vui là lý do<br>
-                Tới Bến là điểm đến
+                Ăn hết mình<br>
+                sống tới bến
             </h1>
             <div class="home-hero-actions">
                 <a href="{{ route('menu') }}" class="menu hero-menu-btn">Xem thực đơn</a>
@@ -89,6 +95,6 @@
 @endsection
 
 @push('js')
-    <script src="{{ asset('js/user/home.js') }}"></script>
-    <script src="{{ asset('js/user/load.js') }}"></script>
+    <script src="{{ asset('js/user/home.js') }}?v={{ filemtime(public_path('js/user/home.js')) }}"></script>
+    <script src="{{ asset('js/user/load.js') }}?v={{ filemtime(public_path('js/user/load.js')) }}"></script>
 @endpush

@@ -199,13 +199,13 @@ document.addEventListener('DOMContentLoaded', () => {
   `).join('');
 
   const renderMobileSections = (sections) => sections.map((section) => `
-    <section class="menu-section menu-section--${section.variant}">
+    <section class="menu-section menu-section--featured">
       <div class="menu-section-head">
         <h2 class="category-title">${escapeHtml(section.name)}</h2>
         <span class="category-count">${section.products.length} món</span>
       </div>
-      <div class="product-grid product-grid--${section.variant}">
-        ${section.products.map((product) => renderMobileCard(product, section.variant)).join('')}
+      <div class="product-grid product-grid--featured">
+        ${section.products.map((product) => renderMobileCard(product, 'featured')).join('')}
       </div>
     </section>
   `).join('');

@@ -626,7 +626,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initArrivalTimePicker();
     
     let currentPage = 1;
-    const rowsPerPage = 15;
+    const rowsPerPage = 13;
 
     window.filters = {
         code: '',

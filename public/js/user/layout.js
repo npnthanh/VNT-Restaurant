@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const closeBookingBtn = document.getElementById('closeBooking2');
   const bookingSubmitBtn = document.querySelector('#bookingOverlay .submit-btn');
   const bookingOpenButtons = document.querySelectorAll('[data-open-booking]');
+  let scrollTopFrame = null;
+  let restoreScrollBehavior = null;
 
   const updateScrollButton = () => {
     if (!footer || !scrollBtn) return;
@@ -22,19 +24,71 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  const clearScrollTopAnimation = () => {
+    if (scrollTopFrame !== null) {
+      window.cancelAnimationFrame(scrollTopFrame);
+      scrollTopFrame = null;
+    }
+
+    if (restoreScrollBehavior) {
+      restoreScrollBehavior();
+      restoreScrollBehavior = null;
+    }
+  };
+
+  const animateScrollToTop = () => {
+    const startY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+    if (startY <= 0) return;
+
+    clearScrollTopAnimation();
+
+    const root = document.documentElement;
+    const body = document.body;
+    const previousRootBehavior = root.style.scrollBehavior;
+    const previousBodyBehavior = body.style.scrollBehavior;
+
+    root.style.scrollBehavior = 'auto';
+    body.style.scrollBehavior = 'auto';
+
+    restoreScrollBehavior = () => {
+      root.style.scrollBehavior = previousRootBehavior;
+      body.style.scrollBehavior = previousBodyBehavior;
+    };
+
+    const duration = Math.min(420, Math.max(220, startY * 0.12));
+    const startTime = performance.now();
+    const easeOutQuart = (progress) => 1 - Math.pow(1 - progress, 4);
+
+    const step = (now) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(1, elapsed / duration);
+      const eased = easeOutQuart(progress);
+      const nextY = Math.max(0, Math.round(startY * (1 - eased)));
+
+      window.scrollTo(0, nextY);
+
+      if (progress < 1) {
+        scrollTopFrame = window.requestAnimationFrame(step);
+        return;
+      }
+
+      clearScrollTopAnimation();
+    };
+
+    scrollTopFrame = window.requestAnimationFrame(step);
+  };
+
   if (scrollBtn) {
     window.addEventListener('scroll', updateScrollButton);
     updateScrollButton();
 
-    scrollBtn.addEventListener('click', () => {
-      const scrollStep = -window.scrollY / 10;
-      const scrollInterval = setInterval(() => {
-        if (window.scrollY !== 0) {
-          window.scrollBy(0, scrollStep);
-        } else {
-          clearInterval(scrollInterval);
-        }
-      }, 16);
+    scrollBtn.addEventListener('click', (event) => {
+      event.preventDefault();
+      animateScrollToTop();
+    });
+
+    ['touchstart', 'wheel', 'mousedown', 'keydown'].forEach((eventName) => {
+      window.addEventListener(eventName, clearScrollTopAnimation, { passive: true });
     });
   }
 

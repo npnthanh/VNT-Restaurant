@@ -2,7 +2,7 @@
 
 @section('content')
     @push('css')
-        <link rel="stylesheet" href="{{ asset('css/user/menu.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/user/menu.css') }}?v={{ filemtime(public_path('css/user/menu.css')) }}">
     @endpush
     <meta name="filter-url" content="{{ url('/menu/filter') }}">
 
@@ -88,5 +88,5 @@
 @endsection
 
 @push('js')
-    <script src="{{ asset('js/user/menu.js') }}"></script>
+    <script src="{{ asset('js/user/menu.js') }}?v={{ filemtime(public_path('js/user/menu.js')) }}"></script>
 @endpush

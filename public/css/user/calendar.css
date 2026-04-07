@@ -13,8 +13,9 @@
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 10px 10px;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
   height: 46px;
   border-radius: 8px;
   border: 1px solid #ccc;
@@ -30,12 +31,18 @@
 }
 
 .date-trigger .calendar-icon { 
-  flex: 1;
+  flex: 0 0 22px;
+  width: 22px;
+  height: 22px;
+  max-width: 22px;
+  margin-left: auto;
+  display: block;
   opacity: 0.9
 }
 
 .date-trigger span {
-  flex: 3;
+  flex: 1 1 auto;
+  min-width: 0;
   text-align: center;
 }
 
