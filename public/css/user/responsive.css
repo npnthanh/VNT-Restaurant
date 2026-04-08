@@ -1182,6 +1182,11 @@ body.booking-open {
     text-align: left;
   }
 
+  .footer-left .list-nav .link-nav {
+    font-size: 20px;
+    line-height: 200%;
+  }
+
   .footer-right {
     grid-area: meta;
     min-width: 0;
@@ -1281,5 +1286,17 @@ body.booking-open {
   .cart-summary-trigger {
     left: 14px;
     right: 14px;
+  }
+
+  .contact-container {
+    gap: 0;
+  }
+
+  .contact-info {
+    margin-bottom: 10px;
+  }
+
+  .contact-socials {
+    margin-top: 10px;
   }
 }

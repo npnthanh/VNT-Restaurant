@@ -12,10 +12,10 @@
             </div>
 
             <div class="contact-socials">
-                <a href="#"><img src="{{ asset('images/web_images/icn-fb-contact.svg') }}" alt=""></a>
-                <a href="#"><img src="{{ asset('images/web_images/icn-tiktok-contact.svg') }}" alt=""></a>
-                <a href="#"><img src="{{ asset('images/web_images/icn-ig-contact.svg') }}" alt=""></a>
-                <a href="#"><img src="{{ asset('images/web_images/icn-yt-contact.svg') }}" alt=""></a>
+                <a href="https://www.facebook.com/ocnamtu"><img src="{{ asset('images/web_images/icn-fb-contact.svg') }}" alt=""></a>
+                <a href="https://www.tiktok.com/@ocnamtu2212"><img src="{{ asset('images/web_images/icn-tiktok-contact.svg') }}" alt=""></a>
+                <a href="https://www.instagram.com/ocnamtu/"><img src="{{ asset('images/web_images/icn-ig-contact.svg') }}" alt=""></a>
+                <a href="https://www.instagram.com/ocnamtu/"><img src="{{ asset('images/web_images/icn-yt-contact.svg') }}" alt=""></a>
             </div>
         </div>
 
