@@ -37,16 +37,21 @@ body {
     flex: 1 1 auto;
     min-width: 0;
     padding: 0;
+    height: calc(100vh - 20px);
+    display: flex;
+    flex-direction: column;
 }
 
 .tab-content {
-    height: 95%;
+    flex: 1 1 auto;
+    height: auto;
     padding: 10px;
     border-radius: 15px;
     background: #fff;
     display: flex;
     flex-direction: column;
-    min-height: 75vh;
+    min-height: 0;
+    overflow: hidden;
 }
 
 .right-panel {
@@ -354,7 +359,12 @@ body {
 .table-grid {
     display:grid;
     grid-template-columns:repeat(6,1fr);
-    gap:20px
+    gap:20px;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    align-content: start;
+    padding-right: 4px;
 }
 
 .table-item {
@@ -374,6 +384,11 @@ body {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
     gap: 14px;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    align-content: start;
+    padding-right: 4px;
 }
 
 .menu-item {

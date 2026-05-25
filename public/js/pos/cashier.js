@@ -241,9 +241,45 @@ payMethodRadios.forEach(radio => {
         container.style.display = totalPages <= 1 ? 'none' : 'flex';
     }
 
+    function getResponsivePaginationConfig() {
+        const viewportWidth = window.innerWidth;
+
+        if (viewportWidth <= 520) {
+            return { tablePerPage: 8, menuPerPage: 6 };
+        }
+
+        if (viewportWidth <= 768) {
+            return { tablePerPage: 12, menuPerPage: 8 };
+        }
+
+        if (viewportWidth <= 1024) {
+            return { tablePerPage: 16, menuPerPage: 10 };
+        }
+
+        if (viewportWidth <= 1440) {
+            return { tablePerPage: 25, menuPerPage: 12 };
+        }
+
+        return { tablePerPage: 36, menuPerPage: 15 };
+    }
+
+    function applyResponsivePaginationConfig() {
+        const nextConfig = getResponsivePaginationConfig();
+        const hasChanged = CONFIG.tablePerPage !== nextConfig.tablePerPage
+            || CONFIG.menuPerPage !== nextConfig.menuPerPage;
+
+        CONFIG.tablePerPage = nextConfig.tablePerPage;
+        CONFIG.menuPerPage = nextConfig.menuPerPage;
+
+        return hasChanged;
+    }
+
     function paginateTables() {
         const allTables = Array.from(tableItems);
         const filtered = allTables.filter(t => t.getAttribute('data-filtered') !== 'hidden');
+        const totalPages = Math.max(1, Math.ceil(filtered.length / CONFIG.tablePerPage));
+
+        currentTablePage = Math.min(currentTablePage, totalPages);
         
         const start = (currentTablePage - 1) * CONFIG.tablePerPage;
         const end = start + CONFIG.tablePerPage;
@@ -265,6 +301,9 @@ payMethodRadios.forEach(radio => {
     function paginateMenu() {
         const allMenus = Array.from(menuItems);
         const filtered = allMenus.filter(m => m.getAttribute('data-filtered') !== 'hidden');
+        const totalPages = Math.max(1, Math.ceil(filtered.length / CONFIG.menuPerPage));
+
+        currentMenuPage = Math.min(currentMenuPage, totalPages);
         
         const start = (currentMenuPage - 1) * CONFIG.menuPerPage;
         const end = start + CONFIG.menuPerPage;
@@ -368,7 +407,6 @@ payMethodRadios.forEach(radio => {
         catPrevBtn.addEventListener('click', () => scrollCategoryBy(-220));
         catNextBtn.addEventListener('click', () => scrollCategoryBy(220));
         categoryScroll.addEventListener('scroll', updateCategoryScrollButtons);
-        window.addEventListener('resize', applyCategoryItemWidth);
         setTimeout(applyCategoryItemWidth, 0);
     }
 
@@ -917,8 +955,20 @@ payMethodRadios.forEach(radio => {
     checkBookingFromUrl();
     updateBookingHighlight();
     setInterval(updateBookingHighlight, 60000);
+    applyResponsivePaginationConfig();
     paginateTables();
     paginateMenu();
+
+    window.addEventListener('resize', () => {
+        const paginationChanged = applyResponsivePaginationConfig();
+
+        if (paginationChanged) {
+            paginateTables();
+            paginateMenu();
+        }
+
+        applyCategoryItemWidth();
+    });
 
     /* ================= PAY ================= */
     openPayBtn.addEventListener('click', openPayDrawer);

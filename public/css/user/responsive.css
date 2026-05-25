@@ -160,22 +160,6 @@ body.booking-open {
     font-size: 14px;
   }
 
-  .home-hero {
-    height: clamp(400px, 37vw, 710px);
-  }
-
-  .home-hero .slides {
-    height: 100%;
-  }
-
-  .home-hero .slide {
-    height: 100%;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center top;
-    padding: 0;
-  }
-
   .home-hero .prev,
   .home-hero .next {
     top: 50%;
@@ -252,6 +236,24 @@ body.booking-open {
     margin-top: 12px;
     gap: 16px;
     align-items: center;
+  }
+}
+
+@media (min-width: 992px) {
+  .home-hero {
+    height: clamp(430px, 41.76vw, 710px);
+  }
+
+  .home-hero .slides {
+    height: 100%;
+  }
+
+  .home-hero .slide {
+    height: 100%;
+    padding: 0;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
   }
 }
 

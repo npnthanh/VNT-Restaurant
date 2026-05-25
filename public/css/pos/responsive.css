@@ -112,6 +112,61 @@ svg {
   }
 }
 
+@media (min-width: 1025px) and (max-width: 1440px) {
+  .cashier-wrapper {
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .left-panel {
+    height: calc(100vh - 16px);
+  }
+
+  .right-panel {
+    width: clamp(340px, 31vw, 400px);
+    height: calc(100vh - 16px);
+  }
+
+  .tab-content {
+    padding: 12px;
+  }
+
+  .status-filter {
+    margin: 14px 0;
+  }
+
+  .status-content {
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .table-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .table-item {
+    padding: 24px 8px;
+  }
+
+  .menu-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .menu-item {
+    padding: 8px;
+  }
+
+  .menu-item img {
+    height: 118px;
+  }
+
+  .booking-pagination {
+    padding-top: 12px;
+  }
+}
+
 @media (max-width: 1024px) {
   .header-top {
     height: auto;
@@ -237,6 +292,10 @@ svg {
     margin: 0;
     padding: 10px;
     height: auto;
+  }
+
+  .tab-content {
+    min-height: 75vh;
   }
 
   .right-panel {
