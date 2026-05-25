@@ -584,6 +584,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const salaryTypeText = document.getElementById('currentSalaryTypeText');
     const btnSaveSalary = document.getElementById('btnSaveSalary');
     const roleSelect = document.getElementById('role_id');
+    const locationSelect = document.getElementById('staff_location_code');
     const genderSelect = document.getElementById('gender');
     const dobHiddenInput = document.getElementById('dob');
     const dobDisplayInput = document.getElementById('dob_display');
@@ -1171,6 +1172,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const nameValue = form.querySelector('[name="name"]')?.value.trim() || '';
             const phoneValue = form.querySelector('[name="phone"]')?.value.trim() || '';
             const roleValue = roleSelect ? roleSelect.value : '';
+            const locationValue = locationSelect ? locationSelect.value : '';
             const passwordValue = form.querySelector('[name="password"]')?.value || '';
 
             if (!nameValue) {
@@ -1183,6 +1185,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (!roleValue) {
                 showToast('Vui lòng chọn chức vụ', 'error');
+                return;
+            }
+            if (!locationValue) {
+                showToast('Vui lòng chọn cơ sở', 'error');
                 return;
             }
             if (!editingStaffId && !passwordValue) {
@@ -1328,6 +1334,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                     document.querySelector('#staffInfoForm [name="name"]').value = s.name;
                     if (roleSelect) roleSelect.value = s.role_id || '';
+                    if (locationSelect) locationSelect.value = s.location_code || '';
                     document.querySelector('#staffInfoForm [name="cccd"]').value = s.cccd;
                     document.querySelector('#staffInfoForm [name="phone"]').value = s.phone;
                     document.querySelector('#staffInfoForm [name="email"]').value = s.email;

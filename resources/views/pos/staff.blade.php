@@ -312,6 +312,25 @@
 
                             <div class="form-row">
                                 <div class="form-group">
+                                    <label>Cơ sở</label>
+                                    <div class="staff-select" data-staff-select>
+                                        <button type="button" class="staff-select-trigger" id="staffLocationDisplay" aria-expanded="false" aria-controls="staffLocationMenu">
+                                            <span class="staff-select-value is-placeholder" id="staffLocationText"></span>
+                                            <i class="fas fa-chevron-down"></i>
+                                        </button>
+                                        <div class="staff-select-menu" id="staffLocationMenu" aria-hidden="true"></div>
+                                        <select name="location_code" id="staff_location_code">
+                                            <option value="">Chọn cơ sở</option>
+                                            @foreach($locations as $location)
+                                                <option value="{{ $location->code }}">{{ $location->name }} ({{ $location->code }})</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
                                     <label>Số điện thoại</label>
                                     <input type="text" name="phone" id="phone">
                                 </div>

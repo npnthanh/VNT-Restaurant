@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Staff;
+use App\Models\Location;
 
 class AuthController extends Controller
 {
@@ -50,8 +51,8 @@ class AuthController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
-        $locationCode = $request->input('location_code');
-        if (!Staff::where('location_code', $locationCode)->exists()) {
+        $locationCode = trim((string) $request->input('location_code'));
+        if (!Location::where('code', $locationCode)->exists()) {
             $message = "Cửa hàng {$locationCode} không tồn tại.";
             if ($request->expectsJson()) {
                 return response()->json([

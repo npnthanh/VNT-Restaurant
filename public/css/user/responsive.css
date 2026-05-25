@@ -111,6 +111,37 @@ body.booking-open {
   overflow: hidden;
 }
 
+@media (min-width: 992px) {
+  .booking-popup .row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    align-items: start;
+  }
+
+  .booking-popup .row > .field {
+    min-width: 0;
+  }
+
+  .booking-popup .guest,
+  .booking-popup .custom-dropdown,
+  .booking-popup .date-trigger {
+    min-width: 0;
+  }
+
+  .booking-popup .dropdown-selected {
+    gap: 12px;
+  }
+
+  .booking-popup .dropdown-selected .selected-text,
+  .booking-popup .date-trigger span {
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
 @media (min-width: 992px) and (max-width: 1440px) {
   header {
     padding: 0 40px;
@@ -212,27 +243,21 @@ body.booking-open {
     min-height: 92px;
   }
 
-  .row {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px;
-  }
-
-  .field {
+  .booking-popup .field {
     min-width: 0;
   }
 
-  .guest {
+  .booking-popup .guest {
     width: 100%;
   }
 
-  .guest-input {
+  .booking-popup .guest-input {
     flex: 1 1 auto;
     width: auto !important;
     min-width: 0;
   }
 
-  .action-row {
+  .booking-popup .action-row {
     margin-top: 12px;
     gap: 16px;
     align-items: center;
@@ -1125,22 +1150,22 @@ body.booking-open {
     font-size: 28px;
   }
 
-  .row {
+  .booking-popup .row {
     flex-direction: column;
     gap: 12px;
   }
 
-  .guest {
+  .booking-popup .guest {
     width: 100%;
   }
 
-  .action-row {
+  .booking-popup .action-row {
     flex-direction: column-reverse;
     gap: 10px;
   }
 
-  .submit-btn,
-  .cancel-btn {
+  .booking-popup .submit-btn,
+  .booking-popup .cancel-btn {
     width: 100%;
     text-align: center;
   }

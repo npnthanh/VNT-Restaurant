@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Staff;
 use App\Models\Role;
+use App\Models\Location;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -16,9 +17,10 @@ class StaffController extends Controller
     public function index()
     {
         $roles = Role::orderBy('name')->get();
+        $locations = Location::orderBy('name')->get();
         $staff = Staff::with('role')->orderBy('id', 'desc')->get();
 
-        return view('pos.staff', compact('staff', 'roles'));
+        return view('pos.staff', compact('staff', 'roles', 'locations'));
     }
 
     public function show($id)
@@ -38,9 +40,24 @@ class StaffController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->only([
-            'name','phone','cccd','email','password','dob','gender','role_id','start_date'
+        $validator = Validator::make($request->all(), [
+            'location_code' => 'required|exists:location,code',
+        ], [
+            'location_code.required' => 'Vui lòng chọn cơ sở.',
+            'location_code.exists' => 'Cơ sở đã chọn không hợp lệ.',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $data = $request->only([
+            'name','phone','cccd','email','password','dob','gender','role_id','start_date','location_code'
+        ]);
+        $data['location_code'] = trim((string) ($data['location_code'] ?? ''));
 
         $data['status'] = 'Active';
         if ($request->hasFile('img')) {
@@ -61,25 +78,49 @@ class StaffController extends Controller
     public function update(Request $request, $id)
     {
         $staff = Staff::findOrFail($id);
+        $profileFields = [
+            'name', 'phone', 'cccd', 'email', 'password', 'dob',
+            'gender', 'role_id', 'start_date', 'location_code'
+        ];
+        $shouldUpdateProfile = $request->hasAny($profileFields) || $request->hasFile('img');
 
-        $data = $request->only([
-            'name','phone','cccd','email','password','dob','gender','role_id','start_date'
-        ]);
+        if ($shouldUpdateProfile) {
+            $validator = Validator::make($request->all(), [
+                'location_code' => 'required|exists:location,code',
+            ], [
+                'location_code.required' => 'Vui lòng chọn cơ sở.',
+                'location_code.exists' => 'Cơ sở đã chọn không hợp lệ.',
+            ]);
 
-        if ($request->hasFile('img')) {
-            $file = $request->file('img');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('images/staff'), $filename);
-            $data['img'] = $filename;
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
         }
 
-        if (!empty($data['password'])) {
-            $data['password'] = Hash::make($data['password']);
-        } else {
-            unset($data['password']);
+        $data = $request->only($profileFields);
+        if (array_key_exists('location_code', $data)) {
+            $data['location_code'] = trim((string) $data['location_code']);
         }
 
-        $staff->update($data);
+        if ($shouldUpdateProfile) {
+            if ($request->hasFile('img')) {
+                $file = $request->file('img');
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $file->move(public_path('images/staff'), $filename);
+                $data['img'] = $filename;
+            }
+
+            if (!empty($data['password'])) {
+                $data['password'] = Hash::make($data['password']);
+            } else {
+                unset($data['password']);
+            }
+
+            $staff->update($data);
+        }
 
         if ($request->has('salary_type') || $request->has('salary_rate')) {
             $salaryType = $request->input('salary_type');
