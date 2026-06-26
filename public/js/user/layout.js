@@ -115,6 +115,101 @@ document.addEventListener('DOMContentLoaded', () => {
     ? bookingOverlay.querySelectorAll('.custom-dropdown')
     : [];
 
+  const bookingDateHidden = document.getElementById('bookingDateHidden');
+  const timeValuePattern = /^([01]\d|2[0-3]):([0-5]\d)$/;
+
+  const parseBookingDateValue = (value) => {
+    const parts = String(value || '').split('/');
+    if (parts.length !== 3) return null;
+
+    const day = Number(parts[0]);
+    const month = Number(parts[1]);
+    const year = Number(parts[2]);
+    if (!day || !month || !year) return null;
+
+    const date = new Date(year, month - 1, day);
+    date.setHours(0, 0, 0, 0);
+    if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
+      return null;
+    }
+
+    return date;
+  };
+
+  const parseTimeValue = (value) => {
+    const match = String(value || '').trim().match(timeValuePattern);
+    if (!match) return null;
+    return {
+      hours: Number(match[1]),
+      minutes: Number(match[2])
+    };
+  };
+
+  const getBookingTimeDropdown = () => {
+    return Array.from(bookingDropdowns).find((dropdown) => {
+      return Array.from(dropdown.querySelectorAll('.dropdown-list li')).some((entry) => {
+        return timeValuePattern.test(entry.textContent.trim());
+      });
+    }) || null;
+  };
+
+  const getBookingSlotDate = (dateValue, timeValue) => {
+    const date = parseBookingDateValue(dateValue);
+    const time = parseTimeValue(timeValue);
+    if (!date || !time) return null;
+
+    const slotDate = new Date(date);
+    slotDate.setHours(time.hours, time.minutes, 0, 0);
+    return slotDate;
+  };
+
+  const clearDropdownSelection = (dropdown) => {
+    if (!dropdown) return;
+    const selectedText = dropdown.querySelector('.selected-text');
+    const hiddenInput = dropdown.querySelector('input[type="hidden"]');
+    const placeholder = dropdown.dataset.placeholder || '';
+
+    if (selectedText) selectedText.textContent = placeholder;
+    if (hiddenInput) hiddenInput.value = '';
+    delete dropdown.dataset.value;
+  };
+
+  const refreshBookingTimeOptions = () => {
+    const timeDropdown = getBookingTimeDropdown();
+    if (!timeDropdown) return;
+
+    const selectedDate = bookingDateHidden?.value || '';
+    const now = new Date();
+    const currentValue = timeDropdown.dataset.value || '';
+    let currentValueAvailable = !currentValue;
+
+    timeDropdown.querySelectorAll('.dropdown-list li').forEach((entry) => {
+      const timeValue = entry.textContent.trim();
+      const slotDate = getBookingSlotDate(selectedDate, timeValue);
+      const isPast = Boolean(slotDate && slotDate <= now);
+
+      entry.classList.toggle('is-disabled', isPast);
+      entry.setAttribute('aria-disabled', String(isPast));
+
+      if (timeValue === currentValue && !isPast) {
+        currentValueAvailable = true;
+      }
+    });
+
+    if (!currentValueAvailable) {
+      clearDropdownSelection(timeDropdown);
+    }
+  };
+
+  const hasSelectedPastTime = () => {
+    const timeDropdown = getBookingTimeDropdown();
+    const selectedTime = timeDropdown?.dataset.value || '';
+    if (!timeDropdown || !selectedTime) return false;
+
+    const slotDate = getBookingSlotDate(bookingDateHidden?.value || '', selectedTime);
+    return Boolean(slotDate && slotDate <= new Date());
+  };
+
   const resetBookingForm = () => {
     if (!bookingOverlay) return;
     const textInputs = bookingOverlay.querySelectorAll('input[type="text"], textarea');
@@ -137,12 +232,14 @@ document.addEventListener('DOMContentLoaded', () => {
       if (selectedText) selectedText.textContent = placeholder;
       list?.classList.remove('show');
       dropdown.classList.remove('open');
+      delete dropdown.dataset.value;
     });
 
     const dateText = document.getElementById('dateText');
     const bookingDateHidden = document.getElementById('bookingDateHidden');
     if (dateText) dateText.textContent = '--/--';
     if (bookingDateHidden) bookingDateHidden.value = '';
+    refreshBookingTimeOptions();
   };
 
   const openBookingOverlay = (prefill = {}) => {
@@ -168,6 +265,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       }
     }
+
+    refreshBookingTimeOptions();
   };
 
   const closeBookingOverlay = () => {
@@ -203,6 +302,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const hiddenInput = dropdown.querySelector('input[type="hidden"]');
 
     selected?.addEventListener('click', () => {
+      if (dropdown === getBookingTimeDropdown()) {
+        refreshBookingTimeOptions();
+      }
+
       bookingDropdowns.forEach((item) => {
         if (item !== dropdown) {
           item.classList.remove('open');
@@ -216,6 +319,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     list?.querySelectorAll('li').forEach((entry) => {
       entry.addEventListener('click', () => {
+        if (entry.classList.contains('is-disabled') || entry.getAttribute('aria-disabled') === 'true') {
+          return;
+        }
+
         const value = entry.getAttribute('value') || entry.textContent.trim();
         if (selectedText) selectedText.textContent = entry.textContent.trim();
         if (hiddenInput) hiddenInput.value = value;
@@ -225,6 +332,8 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   });
+
+  bookingDateHidden?.addEventListener('change', refreshBookingTimeOptions);
 
   document.addEventListener('click', (event) => {
     if (!event.target.closest('#bookingOverlay .custom-dropdown')) {
@@ -259,7 +368,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const locationId = locationDropdown?.dataset.value || locationDropdown?.querySelector('input[type="hidden"]')?.value || '';
     const guestCount = Number(guestInput?.value || 0);
     const bookingDate = document.getElementById('bookingDateHidden')?.value || '';
-    const timeDropdown = bookingOverlay?.querySelector('.custom-dropdown[data-placeholder="Chọn giờ"]');
+    const timeDropdown = getBookingTimeDropdown();
     const bookingTime = timeDropdown?.dataset.value || '';
     const promotionDropdown = bookingOverlay?.querySelector('.custom-dropdown[data-placeholder="Chọn ưu đãi"]');
     const promotionId = promotionDropdown?.dataset.value || null;
@@ -267,6 +376,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!customerName || !phone || !locationId || guestCount <= 0 || !bookingDate || !bookingTime) {
       showToast('<i class="fas fa-exclamation-triangle"></i> Vui lòng nhập đầy đủ thông tin bắt buộc', 'warning');
+      return;
+    }
+
+    if (hasSelectedPastTime()) {
+      refreshBookingTimeOptions();
+      showToast('<i class="fas fa-exclamation-triangle"></i> Khung giờ này đã qua, vui lòng chọn giờ khác', 'warning');
       return;
     }
 

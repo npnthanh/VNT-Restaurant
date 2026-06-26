@@ -104,6 +104,7 @@
               // value in format dd/mm/yyyy goes to hidden input
               const val = td.getAttribute('data-date');
               hiddenInput.value = val;
+              hiddenInput.dispatchEvent(new Event('change', { bubbles: true }));
 
               // visible text on trigger: "03 Tháng 11"
               const parts = val.split('/');
@@ -150,6 +151,7 @@
     const dd = pad(today.getDate()), mm = pad(today.getMonth()+1), yy = today.getFullYear();
     const val = `${dd}/${mm}/${yy}`;
     hiddenInput.value = val;
+    hiddenInput.dispatchEvent(new Event('change', { bubbles: true }));
     dateText.textContent = `${dd} Tháng ${Number(mm)}`;
     closeModal();
   });

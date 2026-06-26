@@ -241,26 +241,60 @@ payMethodRadios.forEach(radio => {
         container.style.display = totalPages <= 1 ? 'none' : 'flex';
     }
 
-    function getResponsivePaginationConfig() {
-        const viewportWidth = window.innerWidth;
+    function getMenuItemsPerPage(viewportWidth) {
+        if (viewportWidth <= 520) return 6;
+        if (viewportWidth <= 768) return 8;
+        if (viewportWidth <= 1024) return 10;
+        if (viewportWidth <= 1440) return 12;
+        return 15;
+    }
 
+    function getTableLayoutByViewport(viewportWidth) {
         if (viewportWidth <= 520) {
-            return { tablePerPage: 8, menuPerPage: 6 };
+            return { maxColumns: 1, minCellWidth: 130, minCellHeight: 58, gap: 10 };
         }
 
         if (viewportWidth <= 768) {
-            return { tablePerPage: 12, menuPerPage: 8 };
+            return { maxColumns: 2, minCellWidth: 140, minCellHeight: 60, gap: 10 };
         }
 
         if (viewportWidth <= 1024) {
-            return { tablePerPage: 16, menuPerPage: 10 };
+            return { maxColumns: 4, minCellWidth: 145, minCellHeight: 62, gap: 12 };
         }
 
         if (viewportWidth <= 1440) {
-            return { tablePerPage: 25, menuPerPage: 12 };
+            return { maxColumns: 5, minCellWidth: 145, minCellHeight: 68, gap: 14 };
         }
 
-        return { tablePerPage: 36, menuPerPage: 15 };
+        return { maxColumns: 6, minCellWidth: 165, minCellHeight: 76, gap: 20 };
+    }
+
+    function getResponsivePaginationConfig() {
+        const viewportWidth = window.innerWidth;
+        const tableGrid = document.getElementById('tableGrid');
+        const layout = getTableLayoutByViewport(viewportWidth);
+        const gridWidth = tableGrid?.clientWidth || 0;
+        const gridHeight = tableGrid?.clientHeight || 0;
+        const columns = gridWidth > 0
+            ? Math.max(1, Math.min(
+                layout.maxColumns,
+                Math.floor((gridWidth + layout.gap) / (layout.minCellWidth + layout.gap))
+            ))
+            : layout.maxColumns;
+        const fallbackRows = viewportWidth <= 1440 ? 4 : 6;
+        const rows = gridHeight > 0
+            ? Math.max(1, Math.floor((gridHeight + layout.gap) / (layout.minCellHeight + layout.gap)))
+            : fallbackRows;
+
+        if (tableGrid) {
+            tableGrid.style.setProperty('--table-columns', columns);
+            tableGrid.style.setProperty('--table-gap', `${layout.gap}px`);
+        }
+
+        return {
+            tablePerPage: Math.max(columns, columns * rows),
+            menuPerPage: getMenuItemsPerPage(viewportWidth)
+        };
     }
 
     function applyResponsivePaginationConfig() {
@@ -288,7 +322,7 @@ payMethodRadios.forEach(radio => {
 
         filtered.forEach((table, index) => {
             if (index >= start && index < end) {
-                table.style.setProperty('display', 'block', 'important');
+                table.style.setProperty('display', 'flex', 'important');
             }
         });
 

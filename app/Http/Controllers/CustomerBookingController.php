@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Booking;
@@ -34,6 +36,29 @@ class CustomerBookingController extends Controller
 
     public function store(Request $request)
     {
+        if (!$request->filled('booking_time')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Vui lòng chọn thời gian đặt bàn.',
+            ], 422);
+        }
+
+        try {
+            $bookingAt = Carbon::parse($request->booking_time);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Thời gian đặt bàn không hợp lệ.',
+            ], 422);
+        }
+
+        if ($bookingAt->lte(now())) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Khung giờ này đã qua, vui lòng chọn giờ khác.',
+            ], 422);
+        }
+
         DB::beginTransaction();
         try {
             $customer = DB::table('customer')->where('phone', $request->phone)->first();
@@ -54,7 +79,7 @@ class CustomerBookingController extends Controller
                 'phone'         => $request->phone,
                 'location_id'   => $request->location_id,
                 'guest_count'   => $request->guest_count,
-                'booking_time'  => $request->booking_time,
+                'booking_time'  => $bookingAt->format('Y-m-d H:i:s'),
                 'promotion_id'  => $request->promotion_id,
                 'note'          => $request->note,
                 'status'        => $status,
