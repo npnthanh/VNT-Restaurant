@@ -142,4 +142,100 @@ class InvoiceController extends Controller
             ], 500);
         }
     }
+
+    public function cancel($id)
+    {
+        DB::beginTransaction();
+
+        try {
+            $invoice = Invoice::with('details')->lockForUpdate()->findOrFail($id);
+
+            if ($invoice->status === 'cancel') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Hóa đơn này đã bị hủy trước đó'
+                ], 400);
+            }
+
+            $userId = Auth::guard('staff')->id();
+
+            if ($invoice->status === 'completed' && $invoice->details->isNotEmpty()) {
+                $ingredientUsed = [];
+
+                foreach ($invoice->details as $detail) {
+                    $recipes = DB::table('recipe')
+                        ->where('product_id', $detail->product_id)
+                        ->get();
+
+                    foreach ($recipes as $recipe) {
+                        if (!isset($ingredientUsed[$recipe->ingredient_id])) {
+                            $ingredientUsed[$recipe->ingredient_id] = 0;
+                        }
+
+                        $ingredientUsed[$recipe->ingredient_id] += $recipe->quantity * $detail->quantity;
+                    }
+                }
+
+                if (!empty($ingredientUsed)) {
+                    $ingredients = DB::table('ingredient')
+                        ->whereIn('id', array_keys($ingredientUsed))
+                        ->get()
+                        ->keyBy('id');
+
+                    foreach ($ingredientUsed as $ingredientId => $quantity) {
+                        $ingredient = $ingredients->get($ingredientId);
+
+                        if (!$ingredient) {
+                            throw new \Exception('Không tìm thấy nguyên liệu để hoàn kho');
+                        }
+
+                        DB::table('inventory_log')->insert([
+                            'ingredient_id' => $ingredientId,
+                            'type' => 'import',
+                            'quantity' => $quantity,
+                            'price' => $ingredient->price ?? 0,
+                            'total_price' => $quantity * ($ingredient->price ?? 0),
+                            'ref_type' => 'invoice',
+                            'ref_id' => $invoice->id,
+                            'staff_id' => $userId,
+                            'created_at' => now(),
+                        ]);
+
+                        DB::table('ingredient')
+                            ->where('id', $ingredientId)
+                            ->increment('quantity', $quantity);
+                    }
+                }
+            }
+
+            $invoice->update([
+                'status' => 'cancel',
+                'time_end' => $invoice->time_end ?? now(),
+            ]);
+
+            DB::table('activity_log')->insert([
+                'staff_id' => $userId,
+                'action' => 'cancel_invoice',
+                'subject_type' => 'invoice',
+                'subject_id' => $invoice->id,
+                'amount' => $invoice->pay_amount,
+                'description' => ' hủy hóa đơn #' . $invoice->id,
+                'created_at' => now(),
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Đã hủy hóa đơn'
+            ]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
 }
