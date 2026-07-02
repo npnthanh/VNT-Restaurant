@@ -127,10 +127,15 @@ class InvoiceController extends Controller
                 'created_at' => now(),
             ]);
 
+            $updatedProducts = DB::table('product_available')
+                ->select('product_id', 'available_qty')
+                ->get();
+
             return response()->json([
                 'success' => true,
                 'message' => 'Thanh toán thành công',
-                'invoice_id' => $invoice->id
+                'invoice_id' => $invoice->id,
+                'updated_products' => $updatedProducts
             ]);
 
         } catch (\Throwable $e) {

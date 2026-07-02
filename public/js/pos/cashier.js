@@ -272,6 +272,7 @@ payMethodRadios.forEach(radio => {
     function getResponsivePaginationConfig() {
         const viewportWidth = window.innerWidth;
         const tableGrid = document.getElementById('tableGrid');
+        const menuGrid = document.querySelector('.menu-grid');
         const layout = getTableLayoutByViewport(viewportWidth);
         const gridWidth = tableGrid?.clientWidth || 0;
         const gridHeight = tableGrid?.clientHeight || 0;
@@ -289,11 +290,48 @@ payMethodRadios.forEach(radio => {
         if (tableGrid) {
             tableGrid.style.setProperty('--table-columns', columns);
             tableGrid.style.setProperty('--table-gap', `${layout.gap}px`);
+            tableGrid.style.setProperty('--table-row-height', `${layout.minCellHeight}px`);
+        }
+
+        const menuGridWidth = menuGrid?.clientWidth || 0;
+        const menuGridHeight = menuGrid?.clientHeight || 0;
+        let menuPerPage = getMenuItemsPerPage(viewportWidth);
+
+        if (menuGridWidth > 0 && menuGridHeight > 0) {
+            const menuGap = viewportWidth <= 1024 ? 12 : 14;
+            const menuItemMinWidth = viewportWidth <= 1024 ? 150 : 170;
+
+            const firstItem = document.querySelector('.menu-item');
+            let menuItemHeight = 190;
+            if (firstItem) {
+                const visibleItem = Array.from(document.querySelectorAll('.menu-item')).find(item => item.offsetHeight > 0);
+                if (visibleItem) {
+                    menuItemHeight = visibleItem.offsetHeight;
+                } else {
+                    menuItemHeight = firstItem.offsetHeight || 190;
+                }
+            }
+
+            const style = window.getComputedStyle(menuGrid);
+            const paddingTop = parseFloat(style.paddingTop || '0') || 0;
+            const paddingBottom = parseFloat(style.paddingBottom || '0') || 0;
+            const paddingLeft = parseFloat(style.paddingLeft || '0') || 0;
+            const paddingRight = parseFloat(style.paddingRight || '0') || 0;
+
+            const availableWidth = Math.max(0, menuGridWidth - paddingLeft - paddingRight);
+            const availableHeight = Math.max(0, menuGridHeight - paddingTop - paddingBottom);
+
+            const menuColumns = Math.floor((availableWidth + menuGap) / (menuItemMinWidth + menuGap));
+            const menuRows = Math.floor((availableHeight + menuGap) / (menuItemHeight + menuGap));
+
+            if (menuColumns > 0 && menuRows > 0) {
+                menuPerPage = menuColumns * menuRows;
+            }
         }
 
         return {
             tablePerPage: Math.max(columns, columns * rows),
-            menuPerPage: getMenuItemsPerPage(viewportWidth)
+            menuPerPage: menuPerPage
         };
     }
 
@@ -462,8 +500,14 @@ payMethodRadios.forEach(radio => {
         if (activeContent) {
             activeContent.classList.add('active');
         }
+
+        applyResponsivePaginationConfig();
+
         if (tabName === 'menu') {
             refreshCategoryScroll();
+            paginateMenu();
+        } else if (tabName === 'tables') {
+            paginateTables();
         }
     }
     showTab('tables');
@@ -683,16 +727,23 @@ payMethodRadios.forEach(radio => {
                         searchResult.style.display = 'block';
                         return;
                     }
-                    searchResult.innerHTML = data.map(p => `
-                        <div class="search-item"
-                            data-id="${p.id}"
-                            data-name="${p.name}"
-                            data-unit="${p.unit}"
-                            data-price="${p.price}">
-                            <strong>${p.name}</strong>
-                            <span>${p.unit} • ${formatPrice(p.price)}</span>
-                        </div>
-                    `).join('');
+                    searchResult.innerHTML = data.map(p => {
+                        const available = p.available_qty !== null ? parseFloat(p.available_qty) : null;
+                        const isOutOfStock = available !== null && available <= 0;
+                        const availableVal = available !== null ? available : 'null';
+                        return `
+                            <div class="search-item ${isOutOfStock ? 'out-of-stock' : ''}"
+                                data-id="${p.id}"
+                                data-name="${p.name}"
+                                data-unit="${p.unit}"
+                                data-price="${p.price}"
+                                data-available="${availableVal}"
+                                ${isOutOfStock ? 'style="opacity: 0.6; cursor: not-allowed;"' : ''}>
+                                <strong>${p.name} ${isOutOfStock ? '(Hết hàng)' : ''}</strong>
+                                <span>${p.unit} • ${formatPrice(p.price)}</span>
+                            </div>
+                        `;
+                    }).join('');
                     searchResult.style.display = 'block';
                 });
         }, 300);
@@ -701,6 +752,14 @@ payMethodRadios.forEach(radio => {
     searchResult.addEventListener('click', (e) => {
         const item = e.target.closest('.search-item');
         if (!item) return;
+        const availableStr = item.dataset.available;
+        if (availableStr !== 'null') {
+            const available = parseFloat(availableStr || '0');
+            if (available <= 0) {
+                showToast('Món này không đủ tồn kho', 'error');
+                return;
+            }
+        }
         addProduct({
             id: item.dataset.id,
             name: item.dataset.name,
@@ -777,6 +836,17 @@ payMethodRadios.forEach(radio => {
             `;
 
             div.querySelector('.btn-plus').onclick = () => {
+                const menuItem = document.querySelector(`.menu-item[data-id="${item.id}"]`);
+                if (menuItem) {
+                    const availableStr = menuItem.dataset.available;
+                    if (availableStr !== 'null') {
+                        const available = parseFloat(availableStr || '0');
+                        if (item.qty >= available) {
+                            showToast('Món này không đủ tồn kho', 'error');
+                            return;
+                        }
+                    }
+                }
                 item.qty++;
                 saveOrder();
                 updateTableStatus();
@@ -878,6 +948,20 @@ payMethodRadios.forEach(radio => {
             showToast('Vui lòng chọn bàn trước khi chọn món', 'warning');
             return;
         }
+
+        const menuItem = document.querySelector(`.menu-item[data-id="${product.id}"]`);
+        if (menuItem) {
+            const availableStr = menuItem.dataset.available;
+            if (availableStr !== 'null') {
+                const available = parseFloat(availableStr || '0');
+                const currentQty = orderItems[product.id] ? orderItems[product.id].qty : 0;
+                if (currentQty >= available) {
+                    showToast('Món này không đủ tồn kho', 'error');
+                    return;
+                }
+            }
+        }
+
         startServingIfNeeded(table.id);
         if (orderItems[product.id]) {
             orderItems[product.id].qty++;
@@ -899,6 +983,14 @@ payMethodRadios.forEach(radio => {
     /* ================= CLICK MENU ITEM ================= */
     document.querySelectorAll('.menu-item').forEach(item => {
         item.addEventListener('click', () => {
+            const availableStr = item.dataset.available;
+            if (availableStr !== 'null') {
+                const available = parseFloat(availableStr || '0');
+                if (available <= 0) {
+                    showToast('Món này không đủ tồn kho', 'error');
+                    return;
+                }
+            }
             addProduct({
                 id: item.dataset.id,
                 name: item.querySelector('h4').textContent,
@@ -994,11 +1086,14 @@ payMethodRadios.forEach(radio => {
     paginateMenu();
 
     window.addEventListener('resize', () => {
-        const paginationChanged = applyResponsivePaginationConfig();
+        applyResponsivePaginationConfig();
 
-        if (paginationChanged) {
-            paginateTables();
+        const activeTabLink = document.querySelector('.nav-tabs li.active a');
+        const activeTabName = activeTabLink ? activeTabLink.dataset.tab : 'tables';
+        if (activeTabName === 'menu') {
             paginateMenu();
+        } else if (activeTabName === 'tables') {
+            paginateTables();
         }
 
         applyCategoryItemWidth();
@@ -1313,7 +1408,21 @@ payMethodRadios.forEach(radio => {
         .then(res => res.json())
         .then(res => {
             if (res.success) {
-               showToast('Thanh toán thành công', 'success');
+                showToast('Thanh toán thành công', 'success');
+
+                if (res.updated_products && Array.isArray(res.updated_products)) {
+                    res.updated_products.forEach(p => {
+                        const menuItem = document.querySelector(`.menu-item[data-id="${p.product_id}"]`);
+                        if (menuItem) {
+                            const availableVal = p.available_qty !== null ? p.available_qty : 'null';
+                            menuItem.dataset.available = availableVal;
+
+                            const isOutOfStock = p.available_qty !== null && p.available_qty <= 0;
+                            menuItem.classList.toggle('out-of-stock', isOutOfStock);
+                        }
+                    });
+                }
+
                 const orderCode = nextOrderNo();
                 document.getElementById('orderNo').innerText = orderCode;
 

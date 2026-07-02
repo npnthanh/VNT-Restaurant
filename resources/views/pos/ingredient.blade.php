@@ -79,7 +79,7 @@
               <td class="ingredient-code">{{ $ingredient->code }}</td>
               <td class="ingredient-name">{{ $ingredient->name }}  ({{ $ingredient->unit }})</td>
               <td>{{ number_format($ingredient->price, 0, ',', '.') }}</td>
-              <td>{{ number_format($ingredient->quantity, 0, ',', '.') }}</td>
+              <td>{{ str_replace('.', ',', (float)$ingredient->quantity) }}</td>
             </tr>
             <!-- Row chi tiết (ẩn) -->
             <tr class="detail-row" id="detail-{{ $ingredient->id }}" style="display:none;">
@@ -98,7 +98,7 @@
                       </div>
                       <div class="field">
                         <div class="field-label">Tồn kho:</div>
-                        <div class="field-value">{{ number_format($ingredient->quantity, 0, ',', '.') }}</div>
+                        <div class="field-value">{{ str_replace('.', ',', (float)$ingredient->quantity) }}</div>
                       </div>
                       <div class="field">
                         <div class="field-label">Giá vốn:</div>

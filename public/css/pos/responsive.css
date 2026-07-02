@@ -124,6 +124,7 @@ svg {
   }
 
   .right-panel {
+    flex: 0 0 clamp(380px, 31vw, 420px);
     width: clamp(380px, 31vw, 420px);
     height: calc(100vh - 16px);
     height: calc(100dvh - 16px);
@@ -370,6 +371,7 @@ svg {
 
   .left-panel,
   .right-panel {
+    flex: none;
     width: 100%;
     margin: 0;
     padding: 10px;

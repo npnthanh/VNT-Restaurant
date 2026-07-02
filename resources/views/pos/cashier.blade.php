@@ -126,9 +126,10 @@
 
                     <div class="menu-grid item-to-paginate">
                         @foreach($products as $product)
-                            <div class="menu-item" data-category="{{ $product->category_id }}" data-name="{{ strtolower($product->name) }}" 
+                            <div class="menu-item {{ ($product->available_qty !== null && $product->available_qty <= 0) ? 'out-of-stock' : '' }}" data-category="{{ $product->category_id }}" data-name="{{ strtolower($product->name) }}" 
                                 data-type="{{ $product->type_menu }}" data-id="{{ $product->id }}" 
-                                data-price="{{ $product->price }}" data-unit="{{ $product->unit }}">
+                                data-price="{{ $product->price }}" data-unit="{{ $product->unit }}"
+                                data-available="{{ $product->available_qty !== null ? $product->available_qty : 'null' }}">
                                 <img src="{{ asset($product->img ?? 'images/product/default-product.png') }}" class="detail-img">
                                 <h4>{{ $product->name }}</h4>
                                 <p>{{ $product->unit }} - {{ number_format($product->price) }}</p>

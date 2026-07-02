@@ -19,7 +19,9 @@ class CashierController extends Controller
         $areas = Area::all();
         $categories = CategoryProduct::all();
         $tables = Table::with('area')->get();
-        $products = Product::all();
+        $products = Product::leftJoin('product_available as pa', 'pa.product_id', '=', 'product.id')
+            ->select('product.*', 'pa.available_qty')
+            ->get();
 
         $staff = auth('staff')->user();
         $locationId = null;
@@ -94,13 +96,15 @@ class CashierController extends Controller
             return response()->json([]);
         }
 
-        $products = Product::where('name', 'like', "%{$keyword}%")
+        $products = Product::leftJoin('product_available as pa', 'pa.product_id', '=', 'product.id')
+            ->where('product.name', 'like', "%{$keyword}%")
             ->limit(10)
             ->get([
-                'id',
-                'name',
-                'price',
-                'unit'
+                'product.id',
+                'product.name',
+                'product.price',
+                'product.unit',
+                'pa.available_qty'
             ]);
 
         return response()->json($products);
