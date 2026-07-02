@@ -1136,6 +1136,20 @@ input[type=number] {
     color: #ffffff;
 }
 
+#bookingModal .daterangepicker .vnt-time-option.is-disabled,
+#bookingModal .daterangepicker .vnt-time-option:disabled {
+    background: #f3f4f6;
+    color: #9ca3af;
+    cursor: not-allowed;
+    opacity: 0.72;
+}
+
+#bookingModal .daterangepicker .vnt-time-option.is-disabled:hover,
+#bookingModal .daterangepicker .vnt-time-option:disabled:hover {
+    background: #f3f4f6;
+    color: #9ca3af;
+}
+
 #bookingModal .daterangepicker .drp-buttons {
     border-top: 1px solid #d9e2dc;
     background: #f7faf8;

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Booking;
 use App\Models\BookingItem;
@@ -29,6 +30,17 @@ class BookingController extends Controller
             'booking_time'  => 'nullable|date',
             'guest_count'   => 'nullable|integer|min:1',
         ]);
+
+        $bookingTime = null;
+        if ($request->filled('booking_time')) {
+            $bookingTime = Carbon::parse($request->booking_time)->startOfMinute();
+            if ($bookingTime->lte(Carbon::now()->startOfMinute())) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Vui long chon gio den sau thoi gian hien tai'
+                ], 422);
+            }
+        }
 
         DB::beginTransaction();
 
@@ -69,7 +81,7 @@ class BookingController extends Controller
                 'customer_name' => $customerName,
                 'phone'         => $request->phone,
                 'promotion_id'  => $request->promotion_id,
-                'booking_time'  => $request->booking_time,
+                'booking_time'  => $bookingTime ? $bookingTime->format('Y-m-d H:i:s') : null,
                 'guest_count'   => $request->guest_count ?? 1,
                 'area_id'       => $request->area_id,
                 'table_id'      => $request->table_id,

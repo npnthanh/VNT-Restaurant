@@ -206,6 +206,43 @@ const formatBookingTimeForDisplay = (value) => {
     return `${dd}/${mm}/${yyyy} ${hh}:${min}`;
 };
 
+const getArrivalNowMinute = () => {
+    if (window.moment) {
+        return moment().seconds(0).milliseconds(0);
+    }
+    const now = new Date();
+    now.setSeconds(0, 0);
+    return now;
+};
+
+const getMinimumArrivalTime = () => {
+    if (window.moment) {
+        return getArrivalNowMinute().add(1, 'minute');
+    }
+    const min = getArrivalNowMinute();
+    min.setMinutes(min.getMinutes() + 1);
+    return min;
+};
+
+const isPastArrivalTime = (value) => {
+    const parsed = parseBookingTime(value);
+    if (!parsed) return false;
+
+    if (window.moment && parsed.clone) {
+        return !parsed.clone().seconds(0).milliseconds(0).isAfter(getArrivalNowMinute());
+    }
+
+    const candidate = new Date(parsed.getTime());
+    candidate.setSeconds(0, 0);
+    return candidate.getTime() <= getArrivalNowMinute().getTime();
+};
+
+const warnPastArrivalTime = () => {
+    if (typeof showToast === 'function') {
+        showToast('Vui l\u00f2ng ch\u1ecdn gi\u1edd \u0111\u1ebfn sau th\u1eddi gian hi\u1ec7n t\u1ea1i', 'warning');
+    }
+};
+
 const syncArrivalTimeDisplay = () => {
     if (!arrivalTimeHidden || !arrivalTimeDisplay) return;
     if (!arrivalTimeHidden.value) {
@@ -228,18 +265,39 @@ const initArrivalTimePicker = () => {
     if (!window.jQuery || !jQuery.fn || !jQuery.fn.daterangepicker) return;
 
     const $arrivalInput = jQuery(arrivalTimeDisplay);
-    const syncArrivalTimeInputs = (momentValue) => {
+    const normalizeArrivalMoment = (momentValue, shouldWarn = false) => {
+        if (!momentValue || !window.moment) return momentValue;
+        const candidate = momentValue.clone ? momentValue.clone() : moment(momentValue);
+        const min = getMinimumArrivalTime();
+        if (!candidate.isAfter(getArrivalNowMinute())) {
+            if (shouldWarn) warnPastArrivalTime();
+            return min;
+        }
+        return candidate.seconds(0).milliseconds(0);
+    };
+    const syncArrivalTimeInputs = (momentValue, shouldWarn = false) => {
         if (!momentValue) return;
-        $arrivalInput.val(momentValue.format('DD/MM/YYYY HH:mm'));
-        arrivalTimeHidden.value = momentValue.format('YYYY-MM-DD HH:mm');
+        const normalized = normalizeArrivalMoment(momentValue, shouldWarn);
+        $arrivalInput.val(normalized.format('DD/MM/YYYY HH:mm'));
+        arrivalTimeHidden.value = normalized.format('YYYY-MM-DD HH:mm');
+    };
+    const applyArrivalMinimum = (picker) => {
+        if (!picker || !window.moment) return;
+        const min = getMinimumArrivalTime();
+        picker.minDate = min.clone();
+        if (!picker.startDate || !picker.startDate.clone().isAfter(getArrivalNowMinute())) {
+            picker.setStartDate(min);
+            picker.setEndDate(min);
+        }
     };
     const ensureArrivalPickerValue = (picker) => {
         if (!picker || !window.moment) return;
         const currentValue = $arrivalInput.val().trim();
-        if (currentValue) return;
-        const now = moment();
-        picker.setStartDate(now);
-        picker.setEndDate(now);
+        applyArrivalMinimum(picker);
+        if (currentValue && !isPastArrivalTime(arrivalTimeHidden.value || currentValue)) return;
+        const min = getMinimumArrivalTime();
+        picker.setStartDate(min);
+        picker.setEndDate(min);
         if (typeof picker.updateCalendars === 'function') {
             picker.updateCalendars();
         }
@@ -347,10 +405,11 @@ const initArrivalTimePicker = () => {
             if (viewAfter) {
                 picker.container.data('vnt-view', viewAfter);
             }
-            picker.setStartDate(momentValue);
-            picker.setEndDate(momentValue);
+            const nextValue = normalizeArrivalMoment(momentValue, true);
+            picker.setStartDate(nextValue);
+            picker.setEndDate(nextValue);
             picker.updateCalendars();
-            syncArrivalTimeInputs(momentValue);
+            syncArrivalTimeInputs(nextValue);
         };
 
         const currentView = getView();
@@ -459,13 +518,38 @@ const initArrivalTimePicker = () => {
 
             const trigger = wrapper.find('.vnt-time-trigger');
             const menu = wrapper.find('.vnt-time-menu');
+            const isArrivalTimeOptionDisabled = (value) => {
+                if (!window.moment || !picker.startDate) return false;
+                const candidate = picker.startDate.clone().seconds(0).milliseconds(0);
+                const optionValue = Number(value);
+
+                if (type === 'hour') {
+                    candidate.hour(optionValue).minute(59);
+                } else if (type === 'minute') {
+                    candidate.minute(optionValue);
+                } else {
+                    return false;
+                }
+
+                return !candidate.isAfter(getArrivalNowMinute());
+            };
+            const refreshOptionStates = () => {
+                menu.find('.vnt-time-option').each(function () {
+                    const option = jQuery(this);
+                    const disabled = isArrivalTimeOptionDisabled(option.data('value'));
+                    option.toggleClass('is-disabled', disabled);
+                    option.prop('disabled', disabled);
+                    option.attr('aria-disabled', disabled ? 'true' : 'false');
+                });
+            };
 
             const buildMenu = () => {
                 const items = select.find('option').map(function () {
                     const option = jQuery(this);
                     const value = option.val();
                     const text = option.text();
-                    return `<button type="button" class="vnt-time-option" data-value="${value}" role="option">${text}</button>`;
+                    const disabled = isArrivalTimeOptionDisabled(value);
+                    return `<button type="button" class="vnt-time-option${disabled ? ' is-disabled' : ''}" data-value="${value}" role="option" aria-disabled="${disabled ? 'true' : 'false'}"${disabled ? ' disabled' : ''}>${text}</button>`;
                 }).get();
                 menu.html(items.join(''));
             };
@@ -474,6 +558,7 @@ const initArrivalTimePicker = () => {
                 const selected = select.find('option:selected');
                 const value = selected.val();
                 trigger.text(selected.text());
+                refreshOptionStates();
                 menu.find('.vnt-time-option').removeClass('is-selected');
                 menu.find(`.vnt-time-option[data-value="${value}"]`).addClass('is-selected');
             };
@@ -491,8 +576,13 @@ const initArrivalTimePicker = () => {
 
             menu.on('click', '.vnt-time-option', function (event) {
                 event.preventDefault();
+                if (this.disabled || jQuery(this).hasClass('is-disabled')) {
+                    warnPastArrivalTime();
+                    return;
+                }
                 const value = jQuery(this).data('value');
                 select.val(value).trigger('change');
+                syncArrivalTimeInputs(picker.startDate.clone(), true);
                 updateTrigger();
                 closeTimeMenus();
             });
@@ -558,6 +648,7 @@ const initArrivalTimePicker = () => {
         singleDatePicker: true,
         timePicker: true,
         timePicker24Hour: true,
+        minDate: window.moment ? getMinimumArrivalTime() : undefined,
         autoUpdateInput: false,
         showDropdowns: false,
         autoApply: true,
@@ -567,7 +658,7 @@ const initArrivalTimePicker = () => {
             format: 'DD/MM/YYYY HH:mm'
         }
     }, function (start) {
-        syncArrivalTimeInputs(start);
+        syncArrivalTimeInputs(start, true);
     });
 
     $arrivalInput.off('click.daterangepicker');
@@ -589,6 +680,7 @@ const initArrivalTimePicker = () => {
 
     $arrivalInput.on('show.daterangepicker', function (event, picker) {
         patchPickerUpdate(picker);
+        applyArrivalMinimum(picker);
         ensureArrivalPickerValue(picker);
         setupMonthYearControls(picker);
         setupTimeSelectControls(picker);
@@ -599,7 +691,7 @@ const initArrivalTimePicker = () => {
     $arrivalInput.on('apply.daterangepicker', function (event, picker) {
         if (!picker || !picker.startDate) return;
         ensureArrivalPickerValue(picker);
-        syncArrivalTimeInputs(picker.startDate.clone ? picker.startDate.clone() : picker.startDate);
+        syncArrivalTimeInputs(picker.startDate.clone ? picker.startDate.clone() : picker.startDate, true);
     });
 
     $arrivalInput.on('change', function () {
@@ -608,7 +700,7 @@ const initArrivalTimePicker = () => {
         }
         const parsed = moment($arrivalInput.val(), 'DD/MM/YYYY HH:mm', true);
         if (parsed.isValid()) {
-            syncArrivalTimeInputs(parsed);
+            syncArrivalTimeInputs(parsed, true);
         }
     });
 
@@ -1222,6 +1314,10 @@ async function createBooking() {
     }
 
     const arrivalTime = form.querySelector('[name="arrival_time"]')?.value;
+    if (arrivalTime && isPastArrivalTime(arrivalTime)) {
+        warnPastArrivalTime();
+        return;
+    }
     if (arrivalTime) formData.append('booking_time', arrivalTime);
 
     const adult = Number(form.querySelector('[name="adult"]').value || 0);
