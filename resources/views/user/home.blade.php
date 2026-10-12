@@ -3,7 +3,7 @@
 @section('content')
     <div id="preloader">
         <div class="loader-content">
-            <div class="loader-text">Tới Bến Quán</div>
+            <div class="loader-text">{{ $website['site_name'] }}</div>
             <div class="progress-bar">
                 <div class="progress"></div>
             </div>
@@ -17,38 +17,36 @@
 
     <section class="slider home-hero">
         <div class="slides">
-            <div class="slide active" style="background-image: url('{{ asset('images/banner/Banner1.png') }}');">
-                <img class="mobile-hero-art" src="{{ asset('images/banner/banner-mobile-1.png') }}" alt="" loading="eager" decoding="async">
-            </div>
-            <div class="slide" style="background-image: url('{{ asset('images/banner/Banner2.png') }}');">
-                <img class="mobile-hero-art" src="{{ asset('images/banner/banner-mobile-2.png') }}" alt="" loading="eager" decoding="async">
-            </div>
-            <div class="slide" style="background-image: url('{{ asset('images/banner/Banner3.png') }}');">
-                <img class="mobile-hero-art" src="{{ asset('images/banner/banner-mobile-3.png') }}" alt="" loading="eager" decoding="async">
-            </div>
+            @foreach($website['banners'] as $banner)
+                @if($banner['enabled'])
+                    <div class="slide" style="background-image: url('{{ asset($banner['desktop']) }}');" role="img" aria-label="{{ $banner['alt'] }}">
+                        <img class="mobile-hero-art" src="{{ asset($banner['mobile'] ?: $banner['desktop']) }}" alt="" loading="eager" decoding="async">
+                    </div>
+                @endif
+            @endforeach
         </div>
         <div class="home-hero-copy">
-            <span class="home-kicker">Quẩy hết mình cùng Tới Bến</span>
+            <span class="home-kicker">{{ $website['hero_kicker'] }}</span>
             <h1 class="home-hero-title">
-                Ăn hết mình<br>
-                sống tới bến
+                {!! nl2br(e($website['hero_title'] ?? '')) !!}
             </h1>
             <div class="home-hero-actions">
                 <a href="{{ route('menu') }}" class="menu hero-menu-btn">Xem thực đơn</a>
                 <button class="btn-booking home-booking-btn" type="button" data-open-booking>Đặt bàn</button>
             </div>
         </div>
-        <button class="prev">&#10094;</button>
-        <button class="next">&#10095;</button>
+        @if(collect($website['banners'])->where('enabled', true)->count() > 1)
+            <button class="prev" aria-label="Banner trước">&#10094;</button>
+            <button class="next" aria-label="Banner tiếp theo">&#10095;</button>
+        @endif
     </section>
 
     <section class="slogan-section">
         <h2 class="slogan-text">
-            NIỀM VUI LÀ LÝ DO <br>
-            TỚI BẾN LÀ ĐIỂM ĐẾN
+            {!! nl2br(e($website['slogan_title'] ?? '')) !!}
         </h2>
         <p class="slogan-subtext">
-            Món nóng ra lò, không gian tụ họp thoải mái và ưu đãi luôn được cập nhật mỗi ngày.
+            {{ $website['slogan_description'] }}
         </p>
     </section>
 

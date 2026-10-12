@@ -30,6 +30,7 @@ class AuthServiceProvider extends ServiceProvider
             'view_dashboard' => ['Admin', 'Quản Lý', 'Kế Toán', 'Bảo Vệ', 'Bếp Trưởng', 'Bếp Phó', 'Nhân Viên Bàn', 'Nhân viên Phục Vụ', 'Tạp Vụ', 'Chảo', 'Thớt', 'Chảo Non', 'Phụ Bếp'],
 
             'manage_role' => ['Admin'],
+            'manage_website_settings' => ['Admin', 'Quản Lý'],
 
             'view_product' => ['Admin', 'Quản Lý', 'Kế Toán', 'Bếp Trưởng'],
             'create_product' => ['Admin', 'Quản Lý'],

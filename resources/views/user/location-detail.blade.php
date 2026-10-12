@@ -41,7 +41,7 @@
         $address = $address !== '' ? $address : $location->name;
 
         $hotline = trim((string) ($detail->hotline ?? ''));
-        $hotline = $hotline !== '' ? $hotline : '0961581328';
+        $hotline = $hotline !== '' ? $hotline : $website['hotline'];
 
         $bookingNote = trim((string) ($detail->booking_note ?? ''));
         $parkingNote = trim((string) ($detail->parking_note ?? ''));

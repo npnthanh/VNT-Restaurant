@@ -43,6 +43,21 @@ use App\Http\Controllers\VnpayController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
+// Standalone customer website administration.
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/login', [\App\Http\Controllers\WebsiteAdminAuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [\App\Http\Controllers\WebsiteAdminAuthController::class, 'login'])
+        ->middleware('throttle:website-admin-login')->name('login.submit');
+    Route::middleware('auth:staff')->group(function () {
+        Route::post('/logout', [\App\Http\Controllers\WebsiteAdminAuthController::class, 'logout'])->name('logout');
+        Route::middleware('can:manage_website_settings')->group(function () {
+            Route::get('/', fn () => redirect()->route('admin.website-settings.edit'))->name('home');
+            Route::get('/website-settings', [\App\Http\Controllers\WebsiteSettingsController::class, 'edit'])->name('website-settings.edit');
+            Route::put('/website-settings', [\App\Http\Controllers\WebsiteSettingsController::class, 'update'])->name('website-settings.update');
+        });
+    });
+});
+
 // USER PAGE    
 Route::get('/', [UserController::class, 'home'])->name('home');
 

@@ -5,7 +5,7 @@
             <ul class="content-left">
                 <li>
                     <a href="{{ route('home') }}" class="logo">
-                        <img src="{{ asset('images/logo/logo-user.png') }}" alt="Tới Bến Quán">
+                        <img src="{{ asset($website['logo']) }}" alt="{{ $website['site_name'] }}">
                     </a>
                 </li>
                 <li><button class="btn-booking" type="button" data-open-booking>ĐẶT BÀN</button></li>
@@ -23,22 +23,24 @@
             <div class="info">
                 <div class="info-type">
                     <div class="type">Hotline</div>
-                    <a href="tel:0961581328" class="type-text">0961581328</a>
+                    <a href="tel:{{ $website['hotline_link'] }}" class="type-text">{{ $website['hotline'] }}</a>
                 </div>
                 <div class="info-type">
                     <div class="type">Email</div>
-                    <a href="mailto:toibenquan@gmail.com" class="type-text">toibenquan@gmail.com</a>
+                    <a href="mailto:{{ $website['email'] }}" class="type-text">{{ $website['email'] }}</a>
                 </div>
             </div>
 
             <div class="credit">
                 <div class="list-social">
-                    <a href="https://www.facebook.com/ocnamtu" data-typein="1" target="_blank" rel="nofollow" class="social-link fb"><span class="icon"></span></a>
-                    <a href="https://www.tiktok.com/@ocnamtu2212" data-typein="4" target="_blank" rel="nofollow" class="social-link tiktok"><span class="icon"></span></a>
-                    <a href="https://www.instagram.com/ocnamtu/" data-typein="3" target="_blank" rel="nofollow" class="social-link ig"><span class="icon"></span></a>
-                    <a href="https://www.instagram.com/ocnamtu/" data-typein="5" target="_blank" rel="nofollow" class="social-link yt"><span class="icon"></span></a>
+                    @foreach(['facebook' => 'fb', 'tiktok' => 'tiktok', 'instagram' => 'ig', 'youtube' => 'yt'] as $network => $class)
+                        @if($website[$network])
+                            <a href="{{ $website[$network] }}" target="_blank" rel="noopener noreferrer nofollow" aria-label="{{ ucfirst($network) }}" class="social-link {{ $class }}"><span class="icon"></span></a>
+                        @endif
+                    @endforeach
+                    @if($website['zalo'])<a href="{{ $website['zalo'] }}" target="_blank" rel="noopener noreferrer nofollow" class="social-link" aria-label="Zalo"><span style="font-weight:700;color:inherit">Zalo</span></a>@endif
                 </div>
-                <div class="cre">© 2023 Tới Bến Quán</div>
+                <div class="cre">{{ $website['copyright'] }}</div>
             </div>
         </div>
 

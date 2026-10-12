@@ -2,21 +2,10 @@
     <div class="contact-container">
 
         <div class="contact-left">
-            <h2 class="contact-title">VNT Company</h2>
+            <h2 class="contact-title">{{ $website['site_name'] }}</h2>
             <p class="contact-subtitle">Hợp tác truyền thông</p>
 
-            <div class="contact-info">
-                <p><i class="fa fa-home"></i> 75B Đinh Tiên Hoàng</p>
-                <p><i class="fa fa-envelope"></i> VNTcompany@gmail.com</p>
-                <p><i class="fa fa-phone"></i> 0961581328</p>
-            </div>
-
-            <div class="contact-socials">
-                <a href="https://www.facebook.com/ocnamtu"><img src="{{ asset('images/web_images/icn-fb-contact.svg') }}" alt=""></a>
-                <a href="https://www.tiktok.com/@ocnamtu2212"><img src="{{ asset('images/web_images/icn-tiktok-contact.svg') }}" alt=""></a>
-                <a href="https://www.instagram.com/ocnamtu/"><img src="{{ asset('images/web_images/icn-ig-contact.svg') }}" alt=""></a>
-                <a href="https://www.instagram.com/ocnamtu/"><img src="{{ asset('images/web_images/icn-yt-contact.svg') }}" alt=""></a>
-            </div>
+            @include('user.partials.contact-info')
         </div>
 
         <!-- Form Khiếu Nại -->
@@ -38,4 +27,4 @@
         </div>
     </div>
 </div>
-    
+

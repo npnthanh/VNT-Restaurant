@@ -15,7 +15,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->scoped(\App\Services\WebsiteSettings::class);
     }
 
     /**
@@ -25,6 +25,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        \Illuminate\Support\Facades\RateLimiter::for('website-admin-login', function (\Illuminate\Http\Request $request) {
+            return \Illuminate\Cache\RateLimiting\Limit::perMinute(5)->by($request->ip());
+        });
+
+        View::composer(['layout.user', 'layout.website-admin', 'user.*', 'admin.*'], function ($view) {
+            $view->with('website', app(\App\Services\WebsiteSettings::class)->all());
+        });
+
         View::composer('user.partials.header', function ($view) {
             $locations = DB::table('location')
                 ->where('status', 'active')

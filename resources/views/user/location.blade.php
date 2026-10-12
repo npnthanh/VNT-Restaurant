@@ -58,7 +58,7 @@
                         </div>
 
                         <div class="phone">
-                            <i class="fa fa-phone"></i> 0961581328
+                            <i class="fa fa-phone"></i> {{ $website['hotline'] }}
                         </div>
                     </div>
 

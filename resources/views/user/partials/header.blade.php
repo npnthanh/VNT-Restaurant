@@ -7,10 +7,10 @@
             <span></span>
         </button>
         <a href="{{ route('home') }}" class="logo mobile-logo">
-            <img src="{{ asset('images/logo/logo-user.png') }}" alt="Tới Bến Quán">
+            <img src="{{ asset($website['logo']) }}" alt="{{ $website['site_name'] }}">
         </a>
         <div class="mobile-top-actions">
-            <a href="tel:0961581328" class="mobile-call-btn" aria-label="Gọi hotline">
+            <a href="tel:{{ $website['hotline_link'] }}" class="mobile-call-btn" aria-label="Gọi hotline">
                 <i class="fa fa-phone"></i>
             </a>
             <button class="btn-booking mobile-booking-btn" type="button" id="openBooking" data-open-booking>ĐẶT BÀN</button>
@@ -19,12 +19,12 @@
 
     <div class="left-group">
         <a href="{{ route('home') }}" class="logo">
-            <img src="{{ asset('images/logo/logo-user.png') }}" alt="Tới Bến Quán">
+            <img src="{{ asset($website['logo']) }}" alt="{{ $website['site_name'] }}">
         </a>
         <div class="hotline">
             <span class="label">HOTLINE</span>
             <br/>
-            <span class="number">0961581328</span>
+            <span class="number">{{ $website['hotline'] }}</span>
         </div>
     </div>
 
@@ -34,7 +34,7 @@
         <li><a class="{{ request()->routeIs('news') ? 'active' : '' }}" href="{{ route('news') }}">ƯU ĐÃI</a></li>
         <li><a class="{{ request()->routeIs('contact') ? 'active' : '' }}" href="{{ route('contact') }}">LIÊN HỆ</a></li>
         <li>
-            <a href="tel:0961581328" class="header-call-btn" aria-label="Gọi hotline">
+            <a href="tel:{{ $website['hotline_link'] }}" class="header-call-btn" aria-label="Gọi hotline">
                 <i class="fa fa-phone"></i>
             </a>
         </li>
@@ -45,7 +45,7 @@
     <aside class="mobile-nav-drawer" id="mobileNavDrawer" aria-hidden="true">
         <div class="mobile-nav-head">
             <a href="{{ route('home') }}" class="logo mobile-drawer-logo">
-                <img src="{{ asset('images/logo/logo-user.png') }}" alt="Tới Bến Quán">
+                <img src="{{ asset($website['logo']) }}" alt="{{ $website['site_name'] }}">
             </a>
             <button class="mobile-nav-close" type="button" id="mobileNavClose" aria-label="Đóng menu">&times;</button>
         </div>
@@ -59,13 +59,13 @@
         </nav>
 
         <div class="mobile-nav-meta">
-            <a href="tel:0961581328" class="mobile-nav-contact-item">
+            <a href="tel:{{ $website['hotline_link'] }}" class="mobile-nav-contact-item">
                 <i class="fa fa-phone"></i>
-                <span>0961 581 328</span>
+                <span>{{ $website['hotline'] }}</span>
             </a>
-            <a href="mailto:toibenquan@gmail.com" class="mobile-nav-contact-item">
+            <a href="mailto:{{ $website['email'] }}" class="mobile-nav-contact-item">
                 <i class="fa fa-envelope"></i>
-                <span>toibenquan@gmail.com</span>
+                <span>{{ $website['email'] }}</span>
             </a>
         </div>
 
